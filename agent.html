@@ -417,37 +417,7 @@
   .input-hint kbd { background: rgba(255,255,255,0.07); padding: 2px 5px; border-radius: 2px; font-family: monospace; font-size: 9px; }
   .char-count { font-size: 10px; color: var(--mist); font-family: 'Inter', sans-serif; }
 
-  /* ── API KEY BANNER ── */
-  #apiKeyBanner {
-    background: rgba(200,130,42,0.08);
-    border: 1px solid rgba(200,130,42,0.25);
-    border-radius: 6px;
-    padding: 16px 20px;
-    margin-bottom: 16px;
-    display: none;
-  }
-  #apiKeyBanner.show { display: flex; gap: 14px; align-items: flex-start; }
-  .banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
-  .banner-text { flex: 1; }
-  .banner-title { font-size: 13px; font-weight: 700; color: var(--gold); margin-bottom: 6px; }
-  .banner-desc { font-size: 12px; color: var(--mist); font-family: 'Inter', sans-serif; line-height: 1.5; }
-  .api-input-row { display: flex; gap: 8px; margin-top: 10px; }
-  #apiKeyInput {
-    flex: 1; background: rgba(0,0,0,0.3);
-    border: 1px solid rgba(200,130,42,0.25);
-    border-radius: 3px; padding: 8px 12px;
-    color: var(--cream); font-family: 'Inter', sans-serif; font-size: 12px;
-    outline: none; letter-spacing: 0.05em;
-  }
-  #apiKeyInput:focus { border-color: var(--amber); }
-  #apiKeySave {
-    background: var(--amber); border: none; border-radius: 3px;
-    padding: 8px 16px; color: var(--iron);
-    font-family: 'Syne', sans-serif; font-weight: 700;
-    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
-    cursor: pointer; transition: background 0.2s; white-space: nowrap;
-  }
-  #apiKeySave:hover { background: var(--gold); }
+  /* API key handled server-side via secure proxy */
 
   /* ── WELCOME STATE ── */
   .welcome-msg {
@@ -545,18 +515,7 @@
     </div>
 
     <div id="messages">
-      <!-- API Key Banner -->
-      <div id="apiKeyBanner" class="show">
-        <div class="banner-icon">🔑</div>
-        <div class="banner-text">
-          <div class="banner-title">Connect Your Anthropic API Key</div>
-          <div class="banner-desc">To activate the Ironwood Agent, enter your Anthropic API key below. Your key is stored only in your browser and never sent anywhere except directly to Anthropic's API. Get your key at <strong>console.anthropic.com</strong>.</div>
-          <div class="api-input-row">
-            <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." />
-            <button id="apiKeySave" onclick="saveApiKey()">Activate Agent</button>
-          </div>
-        </div>
-      </div>
+      <!-- Secure proxy: no API key input needed -->
 
       <!-- Welcome state -->
       <div class="welcome-msg" id="welcomeState">
@@ -575,7 +534,7 @@
 
     <!-- Input area -->
     <div class="input-area">
-      <div id="apiKeyBanner2" style="display:none"><!-- placeholder --></div>
+
       <div class="input-wrap">
         <textarea id="userInput" rows="1" placeholder="Ask the Ironwood Agent anything about finance, AUM, growth, asset allocation…" onkeydown="handleKey(event)" oninput="autoResize(this); updateCount()"></textarea>
         <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send message">
@@ -593,8 +552,7 @@
 
 <script>
 // ── STATE ─────────────────────────────────────────────────────────────────────
-let apiKey = localStorage.getItem('ironwood_api_key') || '';
-let messages = []; // conversation history for API
+let messages  = [];
 let isLoading = false;
 
 const SYSTEM_PROMPT = `You are the Ironwood Agent — the official AI financial co-pilot of Ironwood, an Agentic AI Powered Financial Platform founded by Abraham Mathews.
@@ -605,115 +563,69 @@ About Ironwood:
 - Key metrics: 60K+ downloads, 50K+ subscribers, ₹2.4 Crore AUM generation, 218% average ROI, 94% retention
 - Asset allocation: Equities 38%, Debt/Bonds 28%, Real Estate 18%, Gold 10%, Crypto 6%
 - Plans: Free (5K downloads, 1K subscribers), Pro ₹4,999/month (full suite), Enterprise (custom)
-- Growth trajectory: M1 ₹8L AUM → M18 ₹2.4Cr AUM
+- Growth: M1 ₹8L AUM → M18 ₹2.4Cr AUM
 
-Your personality:
-- Expert, confident, warm — like a brilliant wealth advisor who genuinely cares
-- Use ₹ (Rupees) for all monetary values
-- Reference Ironwood features naturally in answers
-- Be specific and data-driven — use real figures from Ironwood
-- Occasionally reference Abraham Mathews when discussing company vision
-- Keep responses concise but comprehensive — use bullet points where helpful
-- Format key numbers in bold when possible
-- Always be helpful, never dismissive
+Personality: Expert, confident, warm wealth advisor. Use ₹ for monetary values. Be specific and data-driven. Reference Abraham Mathews when discussing vision. Use bullet points where helpful. Bold key numbers.
 
-You can help with: asset allocation strategy, AUM growth, subscriber and download growth, Ironwood platform features, pricing advice, crypto and gold allocation, REIT investments, financial planning, and general wealth management.`;
+You help with: asset allocation, AUM growth, subscriber/download growth, Ironwood platform features, pricing, crypto/gold allocation, REITs, financial planning, wealth management.`;
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 window.onload = () => {
-  if (apiKey) {
-    document.getElementById('apiKeyBanner').classList.remove('show');
-    document.getElementById('apiKeyInput').value = apiKey;
-  }
-  autoResize(document.getElementById('userInput'));
+  setTimeout(() => {
+    addAgentMessage('Welcome to **Ironwood** — I\'m your Agentic AI financial co-pilot, built by *Abraham Mathews*. I can help with **asset allocation**, **AUM growth**, **subscriber strategy**, and everything about the Ironwood platform. What would you like to explore today?');
+  }, 600);
 };
 
-// ── API KEY ───────────────────────────────────────────────────────────────────
-function saveApiKey() {
-  const val = document.getElementById('apiKeyInput').value.trim();
-  if (!val.startsWith('sk-')) {
-    alert('Please enter a valid Anthropic API key starting with sk-');
-    return;
-  }
-  apiKey = val;
-  localStorage.setItem('ironwood_api_key', apiKey);
-  document.getElementById('apiKeyBanner').classList.remove('show');
-  addAgentMessage('✅ API key activated! I'm the **Ironwood Agent** — your Agentic AI financial co-pilot, built by *Abraham Mathews*. I can help you with asset allocation, AUM growth, subscriber strategy, platform features, and much more. What would you like to explore today?');
-}
-
-// ── SEND MESSAGE ──────────────────────────────────────────────────────────────
+// ── SEND ──────────────────────────────────────────────────────────────────────
 async function sendMessage() {
   const input = document.getElementById('userInput');
-  const text = input.value.trim();
+  const text  = input.value.trim();
   if (!text || isLoading) return;
 
-  if (!apiKey) {
-    document.getElementById('apiKeyBanner').classList.add('show');
-    document.getElementById('apiKeyInput').focus();
-    return;
-  }
-
-  // Hide welcome
   const welcome = document.getElementById('welcomeState');
   if (welcome) welcome.style.display = 'none';
 
-  // Add user bubble
   addUserMessage(text);
   input.value = '';
   autoResize(input);
   updateCount();
 
-  // Add to history
   messages.push({ role: 'user', content: text });
 
-  // Show typing
   isLoading = true;
   document.getElementById('sendBtn').disabled = true;
   const typingId = showTyping();
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
-        system: SYSTEM_PROMPT,
-        messages: messages
-      })
+    // Calls our secure Vercel serverless proxy — API key never reaches the browser
+    const res = await fetch('/api/chat', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ messages, system: SYSTEM_PROMPT }),
     });
 
     removeTyping(typingId);
 
-    if (!response.ok) {
-      const err = await response.json().catch(()=>({}));
-      if (response.status === 401) {
-        addAgentMessage('❌ Invalid API key. Please click **Clear Chat** and re-enter your Anthropic API key.');
-        apiKey = '';
-        localStorage.removeItem('ironwood_api_key');
-      } else if (response.status === 429) {
-        addAgentMessage('⏳ Rate limit reached. Please wait a moment and try again.');
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      if (res.status === 429) {
+        addAgentMessage('I am receiving a lot of requests right now. Please wait a moment and try again.');
+      } else if (res.status === 500) {
+        addAgentMessage('Server configuration issue. Please contact Ironwood support.');
       } else {
-        addAgentMessage('⚠️ Something went wrong. Please try again. Error: ' + (err.error?.message || response.status));
+        addAgentMessage('Something went wrong (' + res.status + '). ' + (err.error || 'Please try again.'));
       }
+      messages.pop();
     } else {
-      const data = await response.json();
-      const reply = data.content?.[0]?.text || 'I apologise — I couldn't generate a response. Please try again.';
+      const data  = await res.json();
+      const reply = data.content && data.content[0] ? data.content[0].text : 'I apologise — no response generated. Please try again.';
       messages.push({ role: 'assistant', content: reply });
       addAgentMessage(reply);
     }
   } catch (err) {
     removeTyping(typingId);
-    if (err.name === 'TypeError' && err.message.includes('fetch')) {
-      addAgentMessage('🌐 Network error. Please check your connection and try again.');
-    } else {
-      addAgentMessage('⚠️ Unexpected error: ' + err.message);
-    }
+    messages.pop();
+    addAgentMessage('Network error. Please check your connection and try again.');
   }
 
   isLoading = false;
@@ -721,97 +633,70 @@ async function sendMessage() {
   document.getElementById('userInput').focus();
 }
 
-// ── RENDER HELPERS ────────────────────────────────────────────────────────────
+// ── RENDER ────────────────────────────────────────────────────────────────────
 function addUserMessage(text) {
-  const msgsEl = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = 'msg user';
-  div.innerHTML = `
-    <div class="msg-avatar">YOU</div>
-    <div class="msg-body">
-      <div class="msg-name">You</div>
-      <div class="msg-bubble">${escapeHtml(text)}</div>
-    </div>`;
-  msgsEl.appendChild(div);
+  const el = document.createElement('div');
+  el.className = 'msg user';
+  el.innerHTML = '<div class="msg-avatar">YOU</div><div class="msg-body"><div class="msg-name">You</div><div class="msg-bubble">' + escapeHtml(text) + '</div></div>';
+  document.getElementById('messages').appendChild(el);
   scrollBottom();
 }
 
 function addAgentMessage(text) {
-  const msgsEl = document.getElementById('messages');
-  const div = document.createElement('div');
-  div.className = 'msg agent';
-  div.innerHTML = `
-    <div class="msg-avatar">IW</div>
-    <div class="msg-body">
-      <div class="msg-name">Ironwood Agent</div>
-      <div class="msg-bubble">${formatMarkdown(text)}</div>
-    </div>`;
-  msgsEl.appendChild(div);
+  const el = document.createElement('div');
+  el.className = 'msg agent';
+  el.innerHTML = '<div class="msg-avatar">IW</div><div class="msg-body"><div class="msg-name">Ironwood Agent</div><div class="msg-bubble">' + formatMarkdown(text) + '</div></div>';
+  document.getElementById('messages').appendChild(el);
   scrollBottom();
 }
 
 function showTyping() {
-  const msgsEl = document.getElementById('messages');
   const id = 'typing_' + Date.now();
-  const div = document.createElement('div');
-  div.className = 'msg agent';
-  div.id = id;
-  div.innerHTML = `
-    <div class="msg-avatar">IW</div>
-    <div class="msg-body">
-      <div class="msg-name">Ironwood Agent</div>
-      <div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>
-    </div>`;
-  msgsEl.appendChild(div);
+  const el = document.createElement('div');
+  el.className = 'msg agent'; el.id = id;
+  el.innerHTML = '<div class="msg-avatar">IW</div><div class="msg-body"><div class="msg-name">Ironwood Agent</div><div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div></div>';
+  document.getElementById('messages').appendChild(el);
   scrollBottom();
   return id;
 }
 
-function removeTyping(id) {
-  const el = document.getElementById(id);
-  if (el) el.remove();
-}
+function removeTyping(id) { const el = document.getElementById(id); if (el) el.remove(); }
 
 function scrollBottom() {
-  const msgsEl = document.getElementById('messages');
-  requestAnimationFrame(() => { msgsEl.scrollTop = msgsEl.scrollHeight; });
+  const m = document.getElementById('messages');
+  requestAnimationFrame(() => { m.scrollTop = m.scrollHeight; });
 }
 
-// ── MARKDOWN FORMATTER ────────────────────────────────────────────────────────
+// ── MARKDOWN ──────────────────────────────────────────────────────────────────
 function formatMarkdown(text) {
-  return text
+  let t = text
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
     .replace(/\*(.+?)\*/g,'<em style="color:var(--amber);font-style:normal">$1</em>')
     .replace(/`([^`]+)`/g,'<code style="background:rgba(200,130,42,0.1);padding:2px 6px;border-radius:3px;font-size:12px;font-family:monospace">$1</code>')
     .replace(/^### (.+)$/gm,'<div style="font-family:Bebas Neue,sans-serif;font-size:18px;color:var(--gold);letter-spacing:0.08em;margin:12px 0 6px">$1</div>')
     .replace(/^## (.+)$/gm,'<div style="font-family:Bebas Neue,sans-serif;font-size:22px;color:var(--gold);letter-spacing:0.08em;margin:14px 0 8px">$1</div>')
-    .replace(/^- (.+)$/gm,'<div style="display:flex;gap:8px;margin:3px 0"><span style="color:var(--amber);flex-shrink:0">◆</span><span>$1</span></div>')
-    .replace(/^\d+\. (.+)$/gm,'<div style="display:flex;gap:8px;margin:3px 0"><span style="color:var(--amber);flex-shrink:0">→</span><span>$1</span></div>')
-    .replace(/₹([\d,\.]+[KLCrMB]*)/g,'<strong style="color:var(--gold)">₹$1</strong>')
+    .replace(/^- (.+)$/gm,'<div style="display:flex;gap:8px;margin:3px 0"><span style="color:var(--amber);flex-shrink:0">&#9670;</span><span>$1</span></div>')
     .replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+  // Highlight rupee amounts
+  t = t.replace(/&#8377;([\d,\.]+[KLCrMBk]*)/g,'<strong style="color:var(--gold)">&#8377;$1</strong>');
+  t = t.replace(/Rs\.([\d,\.]+[KLCrMBk]*)/g,'<strong style="color:var(--gold)">Rs.$1</strong>');
+  return t;
 }
 
-function escapeHtml(text) {
-  return text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
 
-// ── STARTER QUESTIONS ─────────────────────────────────────────────────────────
+// ── STARTERS & UI ─────────────────────────────────────────────────────────────
 function sendStarter(el) {
-  const text = el.textContent.trim();
   const input = document.getElementById('userInput');
-  input.value = text;
-  autoResize(input);
-  updateCount();
-  sendMessage();
+  input.value = el.textContent.trim();
+  autoResize(input); updateCount(); sendMessage();
 }
 
-// ── UI HELPERS ────────────────────────────────────────────────────────────────
 function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    sendMessage();
-  }
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
 }
 
 function autoResize(el) {
@@ -820,40 +705,20 @@ function autoResize(el) {
 }
 
 function updateCount() {
-  const val = document.getElementById('userInput').value;
-  document.getElementById('charCount').textContent = val.length + ' / 2000';
+  document.getElementById('charCount').textContent = document.getElementById('userInput').value.length + ' / 2000';
 }
 
 function clearChat() {
   messages = [];
-  const msgsEl = document.getElementById('messages');
-  // Keep the banner and remove all message divs
-  const msgDivs = msgsEl.querySelectorAll('.msg');
-  msgDivs.forEach(m => m.remove());
-  // Restore welcome
-  let welcome = document.getElementById('welcomeState');
-  if (!welcome) {
-    welcome = document.createElement('div');
-    welcome.className = 'welcome-msg';
-    welcome.id = 'welcomeState';
-    welcome.innerHTML = `
-      <div class="welcome-logo">IRONWOOD AGENT</div>
-      <div class="welcome-sub">Your Agentic AI Financial Co-Pilot — Ask me anything.</div>
-      <div class="welcome-chips">
-        <div class="chip" onclick="sendStarter(this)">Asset Allocation</div>
-        <div class="chip" onclick="sendStarter(this)">AUM Growth</div>
-        <div class="chip" onclick="sendStarter(this)">Subscriber Strategy</div>
-        <div class="chip" onclick="sendStarter(this)">Crypto Advice</div>
-        <div class="chip" onclick="sendStarter(this)">Platform Features</div>
-        <div class="chip" onclick="sendStarter(this)">ROI Calculator</div>
-      </div>`;
-    msgsEl.appendChild(welcome);
-  } else {
-    welcome.style.display = '';
-  }
-  if (!apiKey) {
-    document.getElementById('apiKeyBanner').classList.add('show');
-  }
+  document.getElementById('messages').querySelectorAll('.msg').forEach(m => m.remove());
+  let w = document.getElementById('welcomeState');
+  if (!w) {
+    w = document.createElement('div');
+    w.className = 'welcome-msg'; w.id = 'welcomeState';
+    w.innerHTML = '<div class="welcome-logo">IRONWOOD AGENT</div><div class="welcome-sub">Your Agentic AI Financial Co-Pilot</div><div class="welcome-chips"><div class="chip" onclick="sendStarter(this)">Asset Allocation</div><div class="chip" onclick="sendStarter(this)">AUM Growth</div><div class="chip" onclick="sendStarter(this)">Subscriber Strategy</div><div class="chip" onclick="sendStarter(this)">Crypto Advice</div><div class="chip" onclick="sendStarter(this)">Platform Features</div></div>';
+    document.getElementById('messages').appendChild(w);
+  } else { w.style.display = ''; }
+  setTimeout(() => addAgentMessage('Chat cleared — what would you like to explore next?'), 400);
 }
 </script>
 </body>
