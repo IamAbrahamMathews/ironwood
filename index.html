@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ironwood — Agentic AI Cybersecurity</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- NEW FONTS: Clash Display (bold display) + Outfit (body) + Fira Code (mono) -->
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════════════
+       DESIGN TOKENS — Bold Chromatic Cyber Palette
+       Primary:  Electric Indigo  #4F46FF
+       Accent 1: Hot Coral        #FF4F6A
+       Accent 2: Neon Lime        #B8FF35
+       Accent 3: Vivid Cyan       #00E5FF
+       Accent 4: Vivid Violet     #BF5FFF
+       Base: Deep near-black with rich blue-violet undertones
+    ═══════════════════════════════════════════════════════ */
+    :root {
+      /* Backgrounds */
+      --bg-0:       #05040F;
+      --bg-1:       #080716;
+      --bg-2:       #0C0B1E;
+      --bg-3:       #101028;
+      --bg-card:    #0E0D22;
+      --bg-raised:  #141330;
+
+      /* Borders */
+      --border:     #1E1C40;
+      --border-2:   #2A2860;
+      --border-3:   #3E3C80;
+
+      /* Text */
+      --text-dim:   #4A4880;
+      --text-muted: #7E7CB8;
+      --text-soft:  #B8B6E0;
+      --text-main:  #E4E2FF;
+      --text-white: #F5F4FF;
+
+      /* Brand Colors */
+      --indigo:     #4F46FF;
+      --indigo-2:   #6B64FF;
+      --indigo-3:   #8C87FF;
+      --indigo-glow: rgba(79,70,255,0.25);
+
+      --coral:      #FF4F6A;
+      --coral-2:    #FF6B83;
+      --coral-glow: rgba(255,79,106,0.2);
+
+      --lime:       #B8FF35;
+      --lime-2:     #CAFF60;
+      --lime-glow:  rgba(184,255,53,0.18);
+
+      --cyan:       #00E5FF;
+      --cyan-2:     #33EEFF;
+      --cyan-glow:  rgba(0,229,255,0.18);
+
+      --violet:     #BF5FFF;
+      --violet-2:   #CF80FF;
+      --violet-glow: rgba(191,95,255,0.2);
+
+      --gold:       #FFB830;
+      --gold-2:     #FFCA5C;
+
+      /* Typography */
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'Outfit', system-ui, sans-serif;
+      --font-mono:    'Fira Code', 'Courier New', monospace;
+
+      /* Radii */
+      --r-xs: 3px; --r-sm: 6px; --r-md: 10px; --r-lg: 18px; --r-xl: 28px; --r-2xl: 40px;
+
+      /* Easing */
+      --ease: cubic-bezier(0.16,1,0.3,1);
+      --ease-snap: cubic-bezier(0.34,1.56,0.64,1);
+    }
+
+    /* ─── RESET ─────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-0);
+      color: var(--text-soft);
+      font-family: var(--font-body);
+      font-weight: 400;
+      line-height: 1.65;
+      overflow-x: hidden;
+      cursor: none;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font-body); }
+
+    /* ─── GRADIENT MESH BACKGROUND ──────────────────────── */
+    .mesh-bg {
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+    }
+    .mesh-bg::before {
+      content: '';
+      position: absolute;
+      width: 900px; height: 900px;
+      top: -200px; left: -200px;
+      background: radial-gradient(circle, rgba(79,70,255,0.14) 0%, transparent 70%);
+      animation: drift1 18s ease-in-out infinite alternate;
+    }
+    .mesh-bg::after {
+      content: '';
+      position: absolute;
+      width: 700px; height: 700px;
+      bottom: -150px; right: -100px;
+      background: radial-gradient(circle, rgba(255,79,106,0.12) 0%, transparent 70%);
+      animation: drift2 22s ease-in-out infinite alternate;
+    }
+    @keyframes drift1 { from{transform:translate(0,0) scale(1)} to{transform:translate(80px,60px) scale(1.15)} }
+    @keyframes drift2 { from{transform:translate(0,0) scale(1)} to{transform:translate(-60px,-80px) scale(1.2)} }
+
+    /* noise grain */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 1000; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      opacity: 0.6;
+    }
+
+    /* ─── CUSTOM CURSOR ─────────────────────────────────── */
+    #cursor {
+      position: fixed; top: 0; left: 0; z-index: 9999;
+      width: 10px; height: 10px;
+      background: var(--lime);
+      border-radius: 50%; pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: width 0.2s var(--ease), height 0.2s var(--ease), background 0.2s;
+      mix-blend-mode: screen;
+    }
+    #cursor-ring {
+      position: fixed; top: 0; left: 0; z-index: 9998;
+      width: 32px; height: 32px;
+      border: 1.5px solid rgba(184,255,53,0.4);
+      border-radius: 50%; pointer-events: none;
+      transform: translate(-50%,-50%);
+      transition: transform 0.15s var(--ease);
+    }
+    body:has(a:hover) #cursor, body:has(button:hover) #cursor {
+      width: 18px; height: 18px; background: var(--coral);
+    }
+    body:has(a:hover) #cursor-ring, body:has(button:hover) #cursor-ring {
+      border-color: rgba(255,79,106,0.5);
+    }
+
+    /* ─── NAVIGATION ────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5vw; height: 66px;
+      background: rgba(5,4,15,0.82);
+      backdrop-filter: blur(24px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-family: var(--font-display); font-size: 1.35rem; font-weight: 900;
+      color: var(--text-white); letter-spacing: -0.01em;
+    }
+    .logo-gem {
+      width: 30px; height: 30px;
+      background: linear-gradient(135deg, var(--indigo), var(--coral));
+      clip-path: polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+      flex-shrink: 0;
+    }
+    .nav-logo .accent { color: var(--indigo-3); font-style: italic; }
+    .nav-links { display: flex; gap: 32px; list-style: none; }
+    .nav-links a {
+      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 400;
+      color: var(--text-muted); letter-spacing: 0.04em;
+      transition: color 0.2s; position: relative;
+    }
+    .nav-links a:hover { color: var(--cyan); }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+      height: 1px; background: var(--cyan);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.25s var(--ease);
+    }
+    .nav-links a:hover::after { transform: scaleX(1); }
+    .nav-cta {
+      font-family: var(--font-mono); font-size: 0.72rem; font-weight: 600;
+      background: var(--indigo); color: #fff;
+      padding: 9px 22px; border-radius: var(--r-sm); border: none;
+      cursor: pointer; letter-spacing: 0.05em;
+      transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--indigo-2); box-shadow: 0 0 28px var(--indigo-glow); transform: translateY(-1px); }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 24px; height: 2px; background: var(--text-muted); }
+
+    /* ─── HERO ──────────────────────────────────────────── */
+    #hero {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column; justify-content: space-between;
+      padding: 110px 5vw 0; overflow: hidden;
+    }
+
+    /* The main content area fills available vertical space */
+    .hero-body {
+      position: relative; z-index: 2;
+      display: flex; align-items: center;
+      flex: 1;
+      padding-bottom: 60px;
+    }
+    .hero-content { max-width: 680px; }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 10px;
+      font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.12em;
+      color: var(--lime); border: 1px solid rgba(184,255,53,0.3);
+      background: rgba(184,255,53,0.06);
+      padding: 7px 16px; border-radius: var(--r-2xl);
+      margin-bottom: 30px;
+      animation: slideUp 0.7s var(--ease) 0.1s both;
+    }
+    .hero-eyebrow .pulse {
+      width: 7px; height: 7px; background: var(--lime); border-radius: 50%;
+      animation: pulse 1.6s infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.3;transform:scale(0.7)} }
+
+    h1.hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 7.5vw, 7rem);
+      font-weight: 900; line-height: 0.93;
+      letter-spacing: -0.03em;
+      color: var(--text-white);
+      margin-bottom: 32px;
+      animation: slideUp 0.8s var(--ease) 0.2s both;
+    }
+    .title-gradient {
+      background: linear-gradient(100deg, var(--indigo-3), var(--coral), var(--violet));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; display: block;
+    }
+    .title-lime { color: var(--lime); -webkit-text-fill-color: var(--lime); display: block; }
+
+    .hero-desc {
+      font-size: 1.08rem; color: var(--text-muted); max-width: 510px;
+      line-height: 1.75; margin-bottom: 44px; font-weight: 400;
+      animation: slideUp 0.8s var(--ease) 0.32s both;
+    }
+    .hero-btns {
+      display: flex; gap: 14px; flex-wrap: wrap;
+      animation: slideUp 0.8s var(--ease) 0.44s both;
+    }
+    .btn-primary {
+      font-family: var(--font-body); font-size: 0.9rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--indigo), var(--coral));
+      color: #fff; padding: 14px 32px; border-radius: var(--r-sm); border: none;
+      cursor: pointer; letter-spacing: 0.01em;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: inline-block; text-decoration: none;
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(79,70,255,0.4); }
+    .btn-ghost {
+      font-family: var(--font-body); font-size: 0.9rem; font-weight: 600;
+      background: transparent; color: var(--text-soft);
+      padding: 14px 32px; border-radius: var(--r-sm);
+      border: 1px solid var(--border-2);
+      cursor: pointer; letter-spacing: 0.01em;
+      transition: border-color 0.2s, color 0.2s;
+      display: inline-block; text-decoration: none;
+    }
+    .btn-ghost:hover { border-color: var(--violet); color: var(--violet); }
+
+    /* Stats bar — now in normal flow at the bottom of the hero */
+    .hero-stats {
+      position: relative; z-index: 2;
+      display: flex; gap: 0; flex-wrap: wrap;
+      border-top: 1px solid var(--border);
+      animation: slideUp 0.8s var(--ease) 0.55s both;
+    }
+    .stat-item {
+      flex: 1; min-width: 160px;
+      padding: 28px 32px 32px;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-val {
+      font-family: var(--font-display); font-size: 2.1rem; font-weight: 900;
+      line-height: 1; letter-spacing: -0.03em; color: var(--text-white);
+    }
+    .stat-val .c1 { color: var(--indigo-3); }
+    .stat-val .c2 { color: var(--coral); }
+    .stat-val .c3 { color: var(--lime); }
+    .stat-val .c4 { color: var(--cyan); }
+    .stat-lbl { font-family: var(--font-mono); font-size: 0.65rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 6px; }
+
+    /* Hero Visual — sits inside .hero-body which is position:relative */
+    .hero-visual {
+      position: absolute; right: 3vw; top: 50%; transform: translateY(-50%);
+      z-index: 1; pointer-events: none;
+      animation: slideUp 1s var(--ease) 0.3s both;
+    }
+    .hex-cluster { position: relative; width: 460px; height: 520px; }
+    .hex-ring {
+      position: absolute; border-radius: 50%; border-style: solid;
+      animation: spinRing linear infinite;
+    }
+    .hex-ring.h1 { width: 360px;height:360px;top:80px;left:50px; border-width:1px; border-color:rgba(79,70,255,0.2); animation-duration:20s; }
+    .hex-ring.h2 { width:440px;height:440px;top:40px;left:10px; border-width:1px; border-color:rgba(255,79,106,0.12); animation-duration:32s; animation-direction:reverse; }
+    .hex-ring.h3 { width:280px;height:280px;top:120px;left:90px; border-width:1px; border-color:rgba(184,255,53,0.1); animation-duration:15s; border-style:dashed; }
+    @keyframes spinRing { to{transform:rotate(360deg)} }
+    .hex-svg { width: 100%; height: 100%; filter: drop-shadow(0 0 50px rgba(79,70,255,0.3)) drop-shadow(0 0 20px rgba(255,79,106,0.15)); }
+
+    @keyframes slideUp { from{opacity:0;transform:translateY(28px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ─── TICKER ─────────────────────────────────────────── */
+    .ticker-band {
+      position: relative; overflow: hidden;
+      background: var(--bg-2);
+      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+      padding: 11px 0; z-index: 2;
+    }
+    .ticker-band::before, .ticker-band::after {
+      content:''; position:absolute; top:0; bottom:0; width:80px; z-index:2;
+    }
+    .ticker-band::before { left:0; background:linear-gradient(90deg,var(--bg-2),transparent); }
+    .ticker-band::after  { right:0; background:linear-gradient(-90deg,var(--bg-2),transparent); }
+    .ticker-track { display:flex; gap:64px; width:max-content; animation:tickerRoll 30s linear infinite; }
+    .ticker-item { display:flex; align-items:center; gap:10px; white-space:nowrap; font-family:var(--font-mono); font-size:0.7rem; }
+    .ticker-item .t-lbl { color:var(--coral); letter-spacing:0.06em; }
+    .ticker-item .t-txt { color:var(--text-muted); }
+    .ticker-dot { width:5px;height:5px;border-radius:50%;background:var(--lime);flex-shrink:0; }
+    @keyframes tickerRoll { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ─── SECTION COMMONS ────────────────────────────────── */
+    section { position: relative; padding: 100px 5vw; }
+    .section-chip {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--cyan);
+      background: rgba(0,229,255,0.07); border: 1px solid rgba(0,229,255,0.2);
+      padding: 5px 14px; border-radius: var(--r-2xl);
+      margin-bottom: 18px;
+    }
+    .section-chip.coral { color:var(--coral); background:rgba(255,79,106,0.07); border-color:rgba(255,79,106,0.2); }
+    .section-chip.lime { color:var(--lime); background:rgba(184,255,53,0.07); border-color:rgba(184,255,53,0.2); }
+    .section-chip.violet { color:var(--violet); background:rgba(191,95,255,0.07); border-color:rgba(191,95,255,0.2); }
+    .section-chip.gold { color:var(--gold); background:rgba(255,184,48,0.07); border-color:rgba(255,184,48,0.2); }
+
+    h2.sec-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4.5vw, 3.6rem);
+      font-weight: 900; line-height: 1.0;
+      letter-spacing: -0.03em; color: var(--text-white);
+      margin-bottom: 20px;
+    }
+    h2.sec-title em { font-style: italic; }
+    h2.sec-title .grad { background: linear-gradient(90deg,var(--indigo-3),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    h2.sec-title .grad-coral { background:linear-gradient(90deg,var(--coral),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    h2.sec-title .grad-lime { background:linear-gradient(90deg,var(--lime),var(--cyan)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+
+    .sec-sub { font-size: 1rem; color: var(--text-muted); max-width: 500px; line-height: 1.75; margin-bottom: 56px; font-weight: 400; }
+
+    .reveal { opacity:0; transform:translateY(22px); transition:opacity 0.7s var(--ease), transform 0.7s var(--ease); }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .rd1{transition-delay:0.1s} .rd2{transition-delay:0.2s} .rd3{transition-delay:0.3s} .rd4{transition-delay:0.4s}
+
+    /* ─── ABOUT ──────────────────────────────────────────── */
+    #about { background: var(--bg-1); }
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:center; }
+    .about-feature { display:flex; align-items:flex-start; gap:16px; margin-bottom:24px; }
+    .feat-icon {
+      width:44px; height:44px; flex-shrink:0; border-radius:var(--r-md);
+      display:flex; align-items:center; justify-content:center; font-size:1.2rem;
+    }
+    .feat-icon.ind { background:rgba(79,70,255,0.15); border:1px solid rgba(79,70,255,0.3); }
+    .feat-icon.cor { background:rgba(255,79,106,0.12); border:1px solid rgba(255,79,106,0.25); }
+    .feat-icon.grn { background:rgba(184,255,53,0.1); border:1px solid rgba(184,255,53,0.25); }
+    .feat-title { font-family:var(--font-body); font-size:0.95rem; font-weight:700; color:var(--text-white); margin-bottom:4px; }
+    .feat-desc { font-size:0.85rem; color:var(--text-muted); line-height:1.65; }
+
+    .about-cards { display:flex; flex-direction:column; gap:18px; }
+    .a-card {
+      background: var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--r-lg); padding:26px;
+      transition: border-color 0.3s, transform 0.3s;
+      position:relative; overflow:hidden;
+    }
+    .a-card::before { content:''; position:absolute; top:0; left:0; bottom:0; width:3px; }
+    .a-card.c1::before { background:var(--indigo); }
+    .a-card.c2::before { background:var(--coral); }
+    .a-card.c3::before { background:var(--lime); }
+    .a-card:hover { border-color:var(--border-3); transform:translateX(5px); }
+    .a-card h3 { font-family:var(--font-body); font-size:0.95rem; font-weight:700; color:var(--text-white); margin-bottom:7px; }
+    .a-card p { font-size:0.85rem; color:var(--text-muted); line-height:1.65; }
+
+    /* ─── COVERAGE ───────────────────────────────────────── */
+    #coverage { background:var(--bg-0); }
+    .tab-row { display:flex; gap:0; width:fit-content; border:1px solid var(--border); border-radius:var(--r-md); overflow:hidden; margin-bottom:48px; }
+    .tab-btn {
+      font-family:var(--font-mono); font-size:0.72rem; font-weight:500;
+      padding:11px 28px; cursor:pointer; border:none; outline:none;
+      background:transparent; color:var(--text-muted); letter-spacing:0.06em; text-transform:uppercase;
+      transition:background 0.2s, color 0.2s;
+    }
+    .tab-btn.active.ext { background:var(--indigo); color:#fff; }
+    .tab-btn.active.int { background:var(--coral); color:#fff; }
+
+    .tab-content { display:none; }
+    .tab-content.active { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+
+    .cov-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--r-lg); padding:30px 26px;
+      transition:border-color 0.3s, box-shadow 0.3s, transform 0.25s;
+      position:relative; overflow:hidden;
+    }
+    .cov-card::after { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+    #tab-external .cov-card::after { background:linear-gradient(90deg,var(--indigo),transparent); }
+    #tab-internal .cov-card::after { background:linear-gradient(90deg,var(--coral),transparent); }
+    #tab-external .cov-card:hover { border-color:rgba(79,70,255,0.4); box-shadow:0 0 40px rgba(79,70,255,0.1); transform:translateY(-4px); }
+    #tab-internal .cov-card:hover { border-color:rgba(255,79,106,0.4); box-shadow:0 0 40px rgba(255,79,106,0.1); transform:translateY(-4px); }
+
+    .cov-num { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); margin-bottom:12px; letter-spacing:0.1em; }
+    .cov-card h3 { font-family:var(--font-body); font-size:1rem; font-weight:700; color:var(--text-white); margin-bottom:10px; }
+    .cov-card p { font-size:0.85rem; color:var(--text-muted); line-height:1.65; }
+    .cov-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:16px; }
+    .cov-tag {
+      font-family:var(--font-mono); font-size:0.6rem; padding:4px 9px;
+      border:1px solid var(--border-2); border-radius:var(--r-xs);
+      color:var(--text-dim); text-transform:uppercase; letter-spacing:0.05em;
+    }
+    #tab-external .cov-tag { border-color:rgba(79,70,255,0.25); color:var(--indigo-3); }
+    #tab-internal .cov-tag { border-color:rgba(255,79,106,0.25); color:var(--coral-2); }
+
+    /* ─── GROWTH ─────────────────────────────────────────── */
+    #growth { background:var(--bg-1); }
+    .growth-grid { display:grid; grid-template-columns:1fr 1fr; gap:80px; align-items:start; }
+
+    .metric-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:40px; }
+    .m-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--r-lg); padding:24px 20px;
+    }
+    .m-num { font-family:var(--font-display); font-size:2rem; font-weight:900; line-height:1; letter-spacing:-0.03em; color:var(--text-white); }
+    .m-num .i { color:var(--indigo-3); }
+    .m-num .c { color:var(--coral); }
+    .m-num .l { color:var(--lime); }
+    .m-num .v { color:var(--violet); }
+    .m-lbl { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.09em; margin-top:7px; }
+    .m-trend { font-family:var(--font-mono); font-size:0.7rem; margin-top:3px; }
+    .m-trend.up-i { color:var(--indigo-3); }
+    .m-trend.up-c { color:var(--coral); }
+    .m-trend.up-l { color:var(--lime); }
+    .m-trend.up-v { color:var(--violet); }
+
+    .chart-wrap { }
+    .chart-head { font-family:var(--font-mono); font-size:0.66rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.1em; margin-bottom:22px; }
+    .bar-rows { display:flex; flex-direction:column; gap:13px; }
+    .bar-row { display:flex; align-items:center; gap:12px; }
+    .bar-yr { font-family:var(--font-mono); font-size:0.68rem; color:var(--text-dim); width:38px; flex-shrink:0; }
+    .bar-track { flex:1; height:9px; background:var(--bg-raised); border-radius:5px; overflow:hidden; }
+    .bar-fill { height:100%; border-radius:5px; transition:width 1.3s var(--ease); width:0; }
+    .bar-fill.f1 { background:linear-gradient(90deg,var(--indigo),var(--indigo-3)); }
+    .bar-fill.f2 { background:linear-gradient(90deg,var(--coral),var(--coral-2)); }
+    .bar-fill.f3 { background:linear-gradient(90deg,var(--violet),var(--violet-2)); }
+    .bar-fill.f4 { background:linear-gradient(90deg,var(--cyan),var(--cyan-2)); }
+    .bar-fill.f5 { background:linear-gradient(90deg,var(--lime),var(--lime-2)); }
+    .bar-fill.f6 { background:linear-gradient(90deg,var(--gold),var(--gold-2)); }
+    .bar-num { font-family:var(--font-mono); font-size:0.68rem; color:var(--text-soft); width:72px; text-align:right; flex-shrink:0; }
+
+    .data-box {
+      margin-top:36px; padding:22px; background:var(--bg-card);
+      border:1px solid var(--border); border-radius:var(--r-lg);
+    }
+    .data-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-top:12px; }
+    .data-num { font-family:var(--font-display); font-size:1.5rem; font-weight:900; letter-spacing:-0.02em; }
+
+    /* ─── SYSTEMS ────────────────────────────────────────── */
+    #systems { background:var(--bg-0); }
+    .sys-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:18px; }
+    .sys-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--r-lg); padding:26px 22px;
+      transition:border-color 0.3s, transform 0.25s;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .sys-card:hover { transform:translateY(-5px); }
+    .sys-card:nth-child(1):hover { border-color:rgba(79,70,255,0.5); box-shadow:0 8px 32px rgba(79,70,255,0.12); }
+    .sys-card:nth-child(2):hover { border-color:rgba(255,79,106,0.5); box-shadow:0 8px 32px rgba(255,79,106,0.12); }
+    .sys-card:nth-child(3):hover { border-color:rgba(184,255,53,0.5); box-shadow:0 8px 32px rgba(184,255,53,0.10); }
+    .sys-card:nth-child(4):hover { border-color:rgba(0,229,255,0.5); box-shadow:0 8px 32px rgba(0,229,255,0.10); }
+    .sys-card:nth-child(5):hover { border-color:rgba(191,95,255,0.5); box-shadow:0 8px 32px rgba(191,95,255,0.12); }
+    .sys-card:nth-child(6):hover { border-color:rgba(255,184,48,0.5); box-shadow:0 8px 32px rgba(255,184,48,0.10); }
+    .sys-card:nth-child(7):hover { border-color:rgba(79,70,255,0.5); box-shadow:0 8px 32px rgba(79,70,255,0.12); }
+    .sys-card:nth-child(8):hover { border-color:rgba(255,79,106,0.5); box-shadow:0 8px 32px rgba(255,79,106,0.12); }
+    .sys-icon-wrap { font-size:1.7rem; }
+    .sys-card h3 { font-family:var(--font-body); font-size:0.92rem; font-weight:700; color:var(--text-white); }
+    .sys-card p { font-size:0.82rem; color:var(--text-muted); line-height:1.6; flex:1; }
+    .sys-badge { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); letter-spacing:0.05em; }
+
+    /* colour top border per card */
+    .sys-card:nth-child(1) { border-top:2px solid var(--indigo); }
+    .sys-card:nth-child(2) { border-top:2px solid var(--coral); }
+    .sys-card:nth-child(3) { border-top:2px solid var(--lime); }
+    .sys-card:nth-child(4) { border-top:2px solid var(--cyan); }
+    .sys-card:nth-child(5) { border-top:2px solid var(--violet); }
+    .sys-card:nth-child(6) { border-top:2px solid var(--gold); }
+    .sys-card:nth-child(7) { border-top:2px solid var(--indigo-3); }
+    .sys-card:nth-child(8) { border-top:2px solid var(--coral-2); }
+
+    /* ─── PRICING ────────────────────────────────────────── */
+    #pricing { background:var(--bg-1); }
+    .price-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; align-items:start; }
+    .p-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--r-xl); padding:34px 26px;
+      position:relative; transition:transform 0.3s, box-shadow 0.3s;
+    }
+    .p-card:hover { transform:translateY(-7px); }
+    .p-card.featured {
+      border-color:var(--indigo);
+      background:linear-gradient(160deg,rgba(79,70,255,0.12) 0%,var(--bg-card) 60%);
+      box-shadow:0 0 60px rgba(79,70,255,0.14);
+    }
+    .p-card.featured:hover { box-shadow:0 20px 80px rgba(79,70,255,0.25); }
+    .p-badge {
+      position:absolute; top:-13px; left:50%; transform:translateX(-50%);
+      font-family:var(--font-mono); font-size:0.62rem; font-weight:600;
+      background:linear-gradient(90deg,var(--indigo),var(--violet));
+      color:#fff; padding:4px 16px; border-radius:var(--r-2xl);
+      letter-spacing:0.1em; text-transform:uppercase; white-space:nowrap;
+    }
+    .p-tier { font-family:var(--font-mono); font-size:0.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.12em; margin-bottom:6px; }
+    .p-name { font-family:var(--font-display); font-size:1.5rem; font-weight:900; color:var(--text-white); margin-bottom:18px; letter-spacing:-0.02em; }
+    .p-price { font-family:var(--font-display); font-size:2.7rem; font-weight:900; color:var(--text-white); letter-spacing:-0.04em; line-height:1; }
+    .p-price sup { font-size:1.1rem; vertical-align:top; margin-top:5px; margin-right:1px; }
+    .p-price .per { font-size:0.85rem; font-weight:400; color:var(--text-dim); font-family:var(--font-body); }
+    .p-note { font-family:var(--font-mono); font-size:0.68rem; color:var(--text-dim); margin:6px 0 20px; }
+    .p-desc { font-size:0.85rem; color:var(--text-muted); line-height:1.65; margin-bottom:24px; min-height:68px; }
+
+    /* color accent per plan */
+    .p-card:nth-child(1) .p-name { color:var(--cyan); }
+    .p-card.featured     .p-name { background:linear-gradient(90deg,var(--indigo-3),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .p-card:nth-child(3) .p-name { color:var(--coral); }
+    .p-card:nth-child(4) .p-name { color:var(--gold); }
+
+    .p-feats { list-style:none; display:flex; flex-direction:column; gap:9px; margin-bottom:28px; }
+    .p-feats li { font-size:0.83rem; color:var(--text-soft); display:flex; gap:9px; align-items:flex-start; }
+    .p-feats li::before { content:''; width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:6px; }
+    .p-card:nth-child(1) .p-feats li::before { background:var(--cyan); }
+    .p-card.featured     .p-feats li::before { background:var(--indigo-3); }
+    .p-card:nth-child(3) .p-feats li::before { background:var(--coral); }
+    .p-card:nth-child(4) .p-feats li::before { background:var(--gold); }
+
+    .p-btn {
+      width:100%; padding:13px; border-radius:var(--r-sm);
+      font-family:var(--font-body); font-size:0.85rem; font-weight:700;
+      cursor:pointer; border:1px solid var(--border-2); background:transparent; color:var(--text-soft);
+      transition:all 0.2s; letter-spacing:0.02em;
+    }
+    .p-card:nth-child(1) .p-btn:hover { border-color:var(--cyan); color:var(--cyan); box-shadow:0 0 20px rgba(0,229,255,0.15); }
+    .p-card.featured .p-btn { background:var(--indigo); border-color:var(--indigo); color:#fff; }
+    .p-card.featured .p-btn:hover { background:var(--indigo-2); box-shadow:0 0 28px var(--indigo-glow); }
+    .p-card:nth-child(3) .p-btn:hover { border-color:var(--coral); color:var(--coral); box-shadow:0 0 20px var(--coral-glow); }
+    .p-card:nth-child(4) .p-btn:hover { border-color:var(--gold); color:var(--gold); box-shadow:0 0 20px rgba(255,184,48,0.15); }
+
+    .p-note-box {
+      margin-top:36px; padding:22px 26px;
+      background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg);
+      font-size:0.84rem; color:var(--text-muted); line-height:1.75;
+      border-left:3px solid var(--indigo);
+    }
+    .p-note-box strong { color:var(--lime); }
+
+    /* ─── TRUST ──────────────────────────────────────────── */
+    #trust { background:var(--bg-0); }
+    .trust-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+    .t-card {
+      background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--r-lg); padding:30px 26px;
+      transition: border-color 0.3s;
+    }
+    .t-card:nth-child(1):hover { border-color:rgba(79,70,255,0.4); }
+    .t-card:nth-child(2):hover { border-color:rgba(255,79,106,0.4); }
+    .t-card:nth-child(3):hover { border-color:rgba(184,255,53,0.4); }
+    .t-stars { font-size:0.75rem; margin-bottom:14px; letter-spacing:5px; }
+    .t-card:nth-child(1) .t-stars { color:var(--indigo-3); }
+    .t-card:nth-child(2) .t-stars { color:var(--coral); }
+    .t-card:nth-child(3) .t-stars { color:var(--lime); }
+    .t-card blockquote { font-size:0.9rem; color:var(--text-soft); line-height:1.75; margin-bottom:22px; font-style:italic; font-family:var(--font-body); }
+    .t-author { display:flex; align-items:center; gap:13px; }
+    .t-avatar {
+      width:40px; height:40px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-display); font-size:0.85rem; font-weight:900; color:#fff;
+    }
+    .t-card:nth-child(1) .t-avatar { background:linear-gradient(135deg,var(--indigo),var(--violet)); }
+    .t-card:nth-child(2) .t-avatar { background:linear-gradient(135deg,var(--coral),var(--gold)); }
+    .t-card:nth-child(3) .t-avatar { background:linear-gradient(135deg,var(--lime),var(--cyan)); color:var(--bg-0); }
+    .t-name { font-size:0.87rem; font-weight:700; color:var(--text-white); font-family:var(--font-body); }
+    .t-role { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); }
+
+    /* ─── CTA BAND ───────────────────────────────────────── */
+    #cta-band {
+      background:linear-gradient(135deg, #07051A 0%, #0E0B2E 50%, #07051A 100%);
+      border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+      text-align:center; padding:100px 5vw; position:relative; overflow:hidden;
+    }
+    #cta-band::before {
+      content:''; position:absolute; top:-200px; left:50%; transform:translateX(-50%);
+      width:800px; height:800px;
+      background:radial-gradient(circle, rgba(79,70,255,0.1) 0%, transparent 70%);
+      pointer-events:none;
+    }
+    #cta-band h2 { font-family:var(--font-display); font-size:clamp(2rem,4vw,3.3rem); font-weight:900; color:var(--text-white); letter-spacing:-0.03em; margin-bottom:16px; position:relative; }
+    #cta-band p { color:var(--text-muted); max-width:460px; margin:0 auto 36px; position:relative; }
+    .cta-row { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; position:relative; }
+
+    /* ─── FOOTER ─────────────────────────────────────────── */
+    footer {
+      background:var(--bg-0); padding:64px 5vw 32px;
+      border-top:1px solid var(--border);
+    }
+    .foot-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:56px; margin-bottom:48px; }
+    .foot-brand { }
+    .foot-brand p { font-size:0.85rem; color:var(--text-dim); line-height:1.7; margin-top:14px; max-width:280px; }
+    .cert-row { display:flex; gap:8px; flex-wrap:wrap; margin-top:16px; }
+    .cert { font-family:var(--font-mono); font-size:0.6rem; padding:4px 10px; border:1px solid var(--border-2); border-radius:var(--r-xs); color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em; }
+    .foot-col h4 { font-family:var(--font-mono); font-size:0.66rem; text-transform:uppercase; letter-spacing:0.12em; color:var(--text-muted); margin-bottom:16px; }
+    .foot-col ul { list-style:none; display:flex; flex-direction:column; gap:9px; }
+    .foot-col ul a { font-size:0.83rem; color:var(--text-dim); transition:color 0.2s; }
+    .foot-col ul a:hover { color:var(--indigo-3); }
+    .foot-bottom { display:flex; align-items:center; justify-content:space-between; padding-top:22px; border-top:1px solid var(--border); flex-wrap:wrap; gap:12px; }
+    .foot-bottom p { font-family:var(--font-mono); font-size:0.65rem; color:var(--text-dim); }
+
+    /* ─── CHATBOT ────────────────────────────────────────── */
+    #chat-fab {
+      position:fixed; bottom:28px; right:28px; z-index:400;
+      width:58px; height:58px; border-radius:50%;
+      background:linear-gradient(135deg,var(--indigo),var(--violet));
+      border:none; cursor:pointer;
+      box-shadow:0 6px 30px rgba(79,70,255,0.5);
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.4rem;
+      transition:transform 0.3s var(--ease-snap), box-shadow 0.3s;
+    }
+    #chat-fab:hover { transform:scale(1.12); box-shadow:0 10px 50px rgba(79,70,255,0.65); }
+    .fab-badge {
+      position:absolute; top:-2px; right:-2px;
+      width:18px; height:18px; background:var(--lime); border-radius:50%;
+      font-family:var(--font-mono); font-size:0.55rem; color:var(--bg-0);
+      display:flex; align-items:center; justify-content:center; font-weight:700;
+    }
+
+    #chat-win {
+      position:fixed; bottom:100px; right:28px; z-index:400;
+      width:384px; height:560px;
+      background:var(--bg-2); border:1px solid rgba(79,70,255,0.3);
+      border-radius:var(--r-xl); overflow:hidden;
+      display:flex; flex-direction:column;
+      box-shadow:0 24px 90px rgba(0,0,0,0.7), 0 0 0 1px var(--border);
+      transform:scale(0.9) translateY(20px); opacity:0; pointer-events:none;
+      transition:transform 0.3s var(--ease), opacity 0.3s;
+    }
+    #chat-win.open { transform:scale(1) translateY(0); opacity:1; pointer-events:all; }
+
+    .chat-hdr {
+      background:linear-gradient(135deg,rgba(79,70,255,0.15),rgba(191,95,255,0.1));
+      padding:15px 18px;
+      border-bottom:1px solid rgba(79,70,255,0.2);
+      display:flex; align-items:center; gap:12px;
+    }
+    .chat-av {
+      width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      background:linear-gradient(135deg,var(--indigo),var(--violet));
+      display:flex; align-items:center; justify-content:center; font-size:0.9rem;
+      box-shadow:0 0 14px rgba(79,70,255,0.4);
+    }
+    .chat-info { flex:1; }
+    .chat-info strong { display:block; font-size:0.87rem; color:var(--text-white); font-weight:700; font-family:var(--font-body); }
+    .chat-info span { font-family:var(--font-mono); font-size:0.62rem; color:var(--indigo-3); }
+    .chat-x { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:1rem; transition:color 0.2s; padding:4px; }
+    .chat-x:hover { color:var(--text-soft); }
+
+    .chat-msgs { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; gap:13px; scroll-behavior:smooth; }
+    .chat-msgs::-webkit-scrollbar { width:3px; }
+    .chat-msgs::-webkit-scrollbar-thumb { background:var(--border-3); border-radius:3px; }
+
+    .msg { max-width:88%; display:flex; flex-direction:column; gap:3px; }
+    .msg.bot { align-self:flex-start; }
+    .msg.user { align-self:flex-end; }
+    .msg-b { padding:10px 14px; border-radius:14px; font-size:0.84rem; line-height:1.6; font-family:var(--font-body); }
+    .msg.bot .msg-b { background:var(--bg-raised); color:var(--text-soft); border:1px solid var(--border); border-bottom-left-radius:3px; }
+    .msg.user .msg-b { background:linear-gradient(135deg,var(--indigo),var(--indigo-2)); color:#fff; font-weight:500; border-bottom-right-radius:3px; }
+    .msg-t { font-family:var(--font-mono); font-size:0.58rem; color:var(--text-dim); padding:0 3px; }
+    .msg.user .msg-t { text-align:right; }
+
+    .typing-wrap { display:flex; gap:5px; padding:11px 14px; }
+    .t-dot { width:6px;height:6px;background:var(--text-dim);border-radius:50%;animation:tdot 1.2s infinite; }
+    .t-dot:nth-child(2){animation-delay:0.2s} .t-dot:nth-child(3){animation-delay:0.4s}
+    @keyframes tdot{0%,80%,100%{transform:scale(1);opacity:0.4}40%{transform:scale(1.4);opacity:1}}
+
+    .qbtns { padding:0 14px 10px; display:flex; gap:7px; flex-wrap:wrap; }
+    .qb {
+      font-family:var(--font-mono); font-size:0.6rem; padding:5px 10px;
+      border:1px solid var(--border-2); border-radius:var(--r-sm); background:transparent;
+      color:var(--text-muted); cursor:pointer; transition:border-color 0.2s, color 0.2s;
+    }
+    .qb:hover { border-color:var(--indigo-3); color:var(--indigo-3); }
+
+    .chat-inp-row { padding:12px 14px; border-top:1px solid rgba(79,70,255,0.15); display:flex; gap:9px; align-items:flex-end; }
+    #chat-input {
+      flex:1; background:var(--bg-raised); border:1px solid var(--border);
+      border-radius:var(--r-md); padding:9px 13px;
+      color:var(--text-soft); font-family:var(--font-body); font-size:0.84rem;
+      resize:none; max-height:100px; outline:none; transition:border-color 0.2s;
+    }
+    #chat-input:focus { border-color:rgba(79,70,255,0.4); }
+    #chat-input::placeholder { color:var(--text-dim); }
+    #chat-send {
+      width:38px; height:38px; flex-shrink:0;
+      background:linear-gradient(135deg,var(--indigo),var(--violet));
+      border:none; border-radius:var(--r-md); cursor:pointer;
+      display:flex; align-items:center; justify-content:center;
+      color:#fff; font-size:0.95rem; transition:transform 0.15s, box-shadow 0.2s;
+    }
+    #chat-send:hover { transform:scale(1.08); box-shadow:0 0 16px var(--indigo-glow); }
+    #chat-send:disabled { background:var(--border-2); cursor:not-allowed; }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────── */
+    @media(max-width:1100px){
+      .price-grid { grid-template-columns:1fr 1fr; }
+      .sys-grid { grid-template-columns:repeat(2,1fr); }
+    }
+    @media(max-width:900px){
+      .about-grid,.growth-grid { grid-template-columns:1fr; gap:48px; }
+      .hex-cluster { display:none; }
+      .tab-content.active { grid-template-columns:1fr; }
+      .trust-grid { grid-template-columns:1fr; }
+      .foot-top { grid-template-columns:1fr 1fr; gap:36px; }
+      .nav-links { display:none; }
+      .hamburger { display:flex; }
+      .hero-body { padding-bottom: 48px; }
+    }
+    @media(max-width:620px){
+      .price-grid { grid-template-columns:1fr; }
+      .sys-grid { grid-template-columns:1fr 1fr; }
+      .metric-grid { grid-template-columns:1fr 1fr; }
+      #chat-win { right:10px; left:10px; width:auto; }
+      .foot-top { grid-template-columns:1fr; }
+      .stat-item { min-width: 140px; padding: 20px 20px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- ════ NAV ═══════════════════════════════════════════════════════ -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="logo-gem"></div>
+    Iron<span class="accent">wood</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">Platform</a></li>
+    <li><a href="#coverage">Coverage</a></li>
+    <li><a href="case-studies.html">Case Studies</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('pricing').scrollIntoView({behavior:'smooth'})">Get Protected</button>
+  <div class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></div>
+</nav>
+
+<!-- ════ HERO ══════════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="mesh-bg"></div>
+  <div style="position:absolute;top:20%;right:28%;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(191,95,255,0.1),transparent 70%);pointer-events:none;animation:drift2 14s ease-in-out infinite alternate;z-index:0;"></div>
+
+  <!-- hero-body: left content + right visual, fills all space above stats -->
+  <div class="hero-body">
+    <div class="hero-content">
+      <div class="hero-eyebrow">
+        <span class="pulse"></span>
+        Agentic AI — Always On Guard
+      </div>
+      <h1 class="hero-title">
+        <span>Defend Every</span>
+        <span class="title-gradient">Network.</span>
+        <span class="title-lime">Automatically.</span>
+      </h1>
+      <p class="hero-desc">Ironwood is an agentic AI cybersecurity platform that autonomously monitors, detects, and neutralises threats across your external perimeter and internal infrastructure — 24 × 7, zero missed alerts.</p>
+      <div class="hero-btns">
+        <a href="#pricing" class="btn-primary">View Pricing →</a>
+        <a href="#coverage" class="btn-ghost">Explore Coverage</a>
+      </div>
+    </div>
+
+    <!-- Hex Shield — absolutely positioned within hero-body -->
+    <div class="hero-visual">
+      <div class="hex-cluster">
+        <div class="hex-ring h2"></div>
+        <div class="hex-ring h1"></div>
+        <div class="hex-ring h3"></div>
+        <svg class="hex-svg" viewBox="0 0 460 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="shieldFill" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#4F46FF" stop-opacity="0.2"/>
+              <stop offset="50%" stop-color="#BF5FFF" stop-opacity="0.12"/>
+              <stop offset="100%" stop-color="#FF4F6A" stop-opacity="0.08"/>
+            </linearGradient>
+            <linearGradient id="shieldStroke" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#4F46FF" stop-opacity="0.9"/>
+              <stop offset="100%" stop-color="#BF5FFF" stop-opacity="0.4"/>
+            </linearGradient>
+            <linearGradient id="innerStroke" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#B8FF35" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#00E5FF" stop-opacity="0.3"/>
+            </linearGradient>
+            <filter id="glow">
+              <feGaussianBlur stdDeviation="4" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <path d="M230 28 L400 90 L400 240 Q400 390 230 470 Q60 390 60 240 L60 90 Z" fill="url(#shieldFill)" stroke="url(#shieldStroke)" stroke-width="1.5"/>
+          <path d="M230 68 L358 118 L358 232 Q358 338 230 410 Q102 338 102 232 L102 118 Z" fill="none" stroke="url(#innerStroke)" stroke-width="1" stroke-dasharray="6 4"/>
+          <text x="230" y="240" font-family="Playfair Display,serif" font-weight="900" font-size="86" fill="url(#shieldStroke)" text-anchor="middle" dominant-baseline="middle" filter="url(#glow)" letter-spacing="-6">IW</text>
+          <g opacity="0.12" stroke="#B8FF35" stroke-width="1">
+            <line x1="100" y1="190" x2="360" y2="190"/><line x1="95" y1="218" x2="365" y2="218"/>
+            <line x1="95" y1="246" x2="365" y2="246"/><line x1="100" y1="274" x2="360" y2="274"/>
+            <line x1="110" y1="302" x2="350" y2="302"/>
+          </g>
+          <g stroke="#4F46FF" stroke-width="2" opacity="0.7">
+            <path d="M105 105 L105 128 L128 128"/><path d="M355 105 L355 128 L332 128"/>
+            <path d="M105 368 L105 345 L128 345"/><path d="M355 368 L355 345 L332 345"/>
+          </g>
+          <circle cx="230" cy="80"  r="5" fill="#B8FF35" opacity="0.8"/>
+          <circle cx="390" cy="165" r="4" fill="#FF4F6A" opacity="0.7"/>
+          <circle cx="390" cy="310" r="4" fill="#4F46FF" opacity="0.7"/>
+          <circle cx="230" cy="460" r="5" fill="#00E5FF" opacity="0.7"/>
+          <circle cx="70"  cy="310" r="4" fill="#BF5FFF" opacity="0.7"/>
+          <circle cx="70"  cy="165" r="4" fill="#FFB830" opacity="0.7"/>
+        </svg>
+      </div>
+    </div>
+  </div><!-- /.hero-body -->
+
+  <!-- Stats bar — always anchored at bottom edge of hero, full width, in normal flow -->
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-val"><span class="c1">2.1</span>B</div>
+      <div class="stat-lbl">Threats Blocked Globally</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">99.<span class="c2">97</span>%</div>
+      <div class="stat-lbl">Detection Accuracy</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">0.<span class="c3">8</span>s</div>
+      <div class="stat-lbl">Avg. Response Time</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-val">840<span class="c4">+</span></div>
+      <div class="stat-lbl">Enterprise Clients — India</div>
+    </div>
+  </div><!-- /.hero-stats -->
+
+</section>
+
+<!-- ════ TICKER ═════════════════════════════════════════════════════ -->
+<div class="ticker-band">
+  <div class="ticker-track" id="ticker"></div>
+</div>
+
+<!-- ════ ABOUT ══════════════════════════════════════════════════════ -->
+<section id="about">
+  <div class="about-grid">
+    <div class="reveal">
+      <div class="section-chip cyan">// What is Ironwood</div>
+      <h2 class="sec-title">Agentic AI that <em><span class="grad">acts</span></em>,<br>not just alerts</h2>
+      <p class="sec-sub">Most security tools tell you something went wrong. Ironwood's autonomous agents detect, investigate, and respond before damage occurs — across your entire digital estate.</p>
+      <div class="about-feature">
+        <div class="feat-icon ind">🧠</div>
+        <div>
+          <div class="feat-title">Multi-Agent Architecture</div>
+          <div class="feat-desc">Specialised AI agents for perimeter defence, internal monitoring, threat intelligence, and incident response working in parallel.</div>
+        </div>
+      </div>
+      <div class="about-feature">
+        <div class="feat-icon cor">⚡</div>
+        <div>
+          <div class="feat-title">Sub-second Autonomous Response</div>
+          <div class="feat-desc">When a threat is confirmed, Ironwood isolates, contains, and remediates — automatically, in under a second.</div>
+        </div>
+      </div>
+      <div class="about-feature">
+        <div class="feat-icon grn">🇮🇳</div>
+        <div>
+          <div class="feat-title">CERT-In & DPDP Compliant</div>
+          <div class="feat-desc">Built for the Indian regulatory landscape — CERT-In reporting, DPDP Act 2023, and SEBI cybersecurity framework ready.</div>
+        </div>
+      </div>
+    </div>
+    <div class="about-cards reveal rd2">
+      <div class="a-card c1">
+        <h3>Continuous Threat Hunting</h3>
+        <p>AI agents actively hunt for indicators of compromise across logs, traffic, endpoints, and cloud workloads — 24 × 7 without analyst fatigue.</p>
+      </div>
+      <div class="a-card c2">
+        <h3>Zero Trust Enforcement</h3>
+        <p>Dynamically enforces least-privilege access. Every connection is authenticated, encrypted, and verified — east-west and north-south.</p>
+      </div>
+      <div class="a-card c3">
+        <h3>Unified Security Posture</h3>
+        <p>Single pane of glass across firewall, EDR, SIEM, SOAR, and cloud security — eliminating tool sprawl and blind spots.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ COVERAGE ═══════════════════════════════════════════════════ -->
+<section id="coverage">
+  <div class="reveal">
+    <div class="section-chip coral">// Defence Perimeters</div>
+    <h2 class="sec-title">External & <em><span class="grad-coral">Internal</span></em> Networks —<br>Both Covered</h2>
+    <p class="sec-sub">Ironwood protects every layer of your infrastructure — from internet-facing assets to deep internal systems your firewalls can't see.</p>
+  </div>
+  <div class="reveal rd1">
+    <div class="tab-row">
+      <button class="tab-btn active ext" onclick="switchTab('external',this,'ext')">🌐 External Networks</button>
+      <button class="tab-btn" onclick="switchTab('internal',this,'int')">🏢 Internal Networks</button>
+    </div>
+    <div class="tab-content active" id="tab-external">
+      <div class="cov-card reveal rd1"><div class="cov-num">EXT-01</div><h3>Perimeter Firewall & IPS</h3><p>Next-gen stateful packet inspection with AI-trained intrusion prevention. Blocks zero-day exploits, port scans, and brute-force attempts before they reach your systems.</p><div class="cov-tags"><span class="cov-tag">NGFW</span><span class="cov-tag">IPS/IDS</span><span class="cov-tag">DDoS Mitigation</span></div></div>
+      <div class="cov-card reveal rd2"><div class="cov-num">EXT-02</div><h3>Web Application & API Security</h3><p>AI-powered WAF defends against OWASP Top 10, API abuse, bot attacks, and credential stuffing. Adapts rules in real time based on traffic anomalies.</p><div class="cov-tags"><span class="cov-tag">WAF</span><span class="cov-tag">API Shield</span><span class="cov-tag">OWASP</span></div></div>
+      <div class="cov-card reveal rd3"><div class="cov-num">EXT-03</div><h3>DNS Security & Threat Intel</h3><p>Protective DNS blocks malicious domains, C2 servers, and phishing URLs. Enriched with real-time global threat intelligence feeds updated every 60 seconds.</p><div class="cov-tags"><span class="cov-tag">Protective DNS</span><span class="cov-tag">C2 Block</span><span class="cov-tag">Threat Intel</span></div></div>
+      <div class="cov-card reveal rd1"><div class="cov-num">EXT-04</div><h3>Cloud & SaaS Security Posture</h3><p>Continuous misconfiguration detection for AWS, Azure, GCP, and 60+ SaaS apps. Catches exposed S3 buckets, overpermissioned IAM roles, and shadow IT.</p><div class="cov-tags"><span class="cov-tag">CSPM</span><span class="cov-tag">SSPM</span><span class="cov-tag">Multi-Cloud</span></div></div>
+      <div class="cov-card reveal rd2"><div class="cov-num">EXT-05</div><h3>Email Security & Anti-Phishing</h3><p>AI scans every inbound email for phishing, BEC, impersonation, and malicious attachments. Quarantines suspicious messages before they land in inboxes.</p><div class="cov-tags"><span class="cov-tag">Anti-Phishing</span><span class="cov-tag">BEC</span><span class="cov-tag">DMARC</span></div></div>
+      <div class="cov-card reveal rd3"><div class="cov-num">EXT-06</div><h3>Attack Surface Management</h3><p>Continuously maps and monitors your external attack surface — shadow IT, forgotten subdomains, and leaked credentials on the dark web.</p><div class="cov-tags"><span class="cov-tag">ASM</span><span class="cov-tag">Dark Web</span><span class="cov-tag">EASM</span></div></div>
+    </div>
+    <div class="tab-content" id="tab-internal">
+      <div class="cov-card reveal rd1"><div class="cov-num">INT-01</div><h3>Endpoint Detection & Response</h3><p>AI-driven EDR on every endpoint — laptops, servers, IoT devices. Detects fileless malware, ransomware staging, and lateral movement in milliseconds.</p><div class="cov-tags"><span class="cov-tag">EDR</span><span class="cov-tag">XDR</span><span class="cov-tag">Fileless Detection</span></div></div>
+      <div class="cov-card reveal rd2"><div class="cov-num">INT-02</div><h3>Network Traffic Analysis</h3><p>Deep packet inspection and ML-based anomaly detection across internal VLANs. Catches east-west lateral movement and insider threats invisible to perimeter tools.</p><div class="cov-tags"><span class="cov-tag">NDR</span><span class="cov-tag">NTA</span><span class="cov-tag">East-West</span></div></div>
+      <div class="cov-card reveal rd3"><div class="cov-num">INT-03</div><h3>Identity & Privileged Access</h3><p>Monitors privileged accounts, service identities, and Active Directory / LDAP. Detects Golden Ticket attacks, privilege escalation, and anomalous admin activity.</p><div class="cov-tags"><span class="cov-tag">PAM</span><span class="cov-tag">IAM</span><span class="cov-tag">AD Security</span></div></div>
+      <div class="cov-card reveal rd1"><div class="cov-num">INT-04</div><h3>Database & Data Exfiltration Prevention</h3><p>Real-time monitoring of database queries, bulk exports, and USB transfers. DLP agents prevent sensitive data leaving via any channel.</p><div class="cov-tags"><span class="cov-tag">DLP</span><span class="cov-tag">DAM</span><span class="cov-tag">UEBA</span></div></div>
+      <div class="cov-card reveal rd2"><div class="cov-num">INT-05</div><h3>OT / ICS & Industrial Security</h3><p>Passive monitoring of SCADA, PLC, HMI, and ICS environments in manufacturing, energy, and utilities. Non-disruptive by design.</p><div class="cov-tags"><span class="cov-tag">OT Security</span><span class="cov-tag">SCADA</span><span class="cov-tag">ICS</span></div></div>
+      <div class="cov-card reveal rd3"><div class="cov-num">INT-06</div><h3>SIEM & Automated Incident Response</h3><p>Centralised logging, correlation, and AI-driven SOAR playbooks. Mean time to respond drops from hours to seconds with autonomous investigation and containment.</p><div class="cov-tags"><span class="cov-tag">SIEM</span><span class="cov-tag">SOAR</span><span class="cov-tag">Playbooks</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ GROWTH ══════════════════════════════════════════════════════ -->
+<section id="growth">
+  <div class="growth-grid">
+    <div class="reveal">
+      <div class="section-chip lime">// Market & Product Growth</div>
+      <h2 class="sec-title">Growing at <em><span class="grad-lime">industry-breaking</span></em> speed</h2>
+      <p class="sec-sub">India's cybersecurity market is exploding — and Ironwood is at the forefront. Backed by data from DSCI, NASSCOM, and live deployment metrics.</p>
+      <div class="metric-grid">
+        <div class="m-card reveal rd1">
+          <div class="m-num">₹<span class="i">28K</span>Cr</div>
+          <div class="m-lbl">India Cyber Market 2024</div>
+          <div class="m-trend up-i">↑ 19% YoY</div>
+        </div>
+        <div class="m-card reveal rd2">
+          <div class="m-num">₹<span class="c">72K</span>Cr</div>
+          <div class="m-lbl">Projected by 2028</div>
+          <div class="m-trend up-c">↑ CAGR 26.4%</div>
+        </div>
+        <div class="m-card reveal rd3">
+          <div class="m-num"><span class="l">3.2</span>M</div>
+          <div class="m-lbl">Cyber Attacks — India 2023</div>
+          <div class="m-trend up-l">↑ 600% since 2018</div>
+        </div>
+        <div class="m-card reveal rd4">
+          <div class="m-num"><span class="v">840</span>+</div>
+          <div class="m-lbl">Enterprise Clients</div>
+          <div class="m-trend up-v">↑ 180% in 18 months</div>
+        </div>
+      </div>
+    </div>
+    <div class="chart-wrap reveal rd2">
+      <div class="chart-head">// Ironwood Deployments — Annual Growth (systems defended)</div>
+      <div class="bar-rows">
+        <div class="bar-row"><span class="bar-yr">2020</span><div class="bar-track"><div class="bar-fill f1" data-w="8%"></div></div><span class="bar-num">1,200</span></div>
+        <div class="bar-row"><span class="bar-yr">2021</span><div class="bar-track"><div class="bar-fill f2" data-w="15%"></div></div><span class="bar-num">2,800</span></div>
+        <div class="bar-row"><span class="bar-yr">2022</span><div class="bar-track"><div class="bar-fill f3" data-w="28%"></div></div><span class="bar-num">8,400</span></div>
+        <div class="bar-row"><span class="bar-yr">2023</span><div class="bar-track"><div class="bar-fill f4" data-w="52%"></div></div><span class="bar-num">28,000</span></div>
+        <div class="bar-row"><span class="bar-yr">2024</span><div class="bar-track"><div class="bar-fill f5" data-w="78%"></div></div><span class="bar-num">74,000</span></div>
+        <div class="bar-row"><span class="bar-yr">2025</span><div class="bar-track"><div class="bar-fill f6" data-w="100%"></div></div><span class="bar-num">1,60,000+</span></div>
+      </div>
+      <div class="data-box">
+        <div class="chart-head">// Threat Volume India (2024 data)</div>
+        <div class="data-grid">
+          <div><div class="data-num" style="color:var(--indigo-3)">68%</div><div style="font-size:0.77rem;color:var(--text-dim);margin-top:3px">Attacks via external perimeter</div></div>
+          <div><div class="data-num" style="color:var(--coral)">32%</div><div style="font-size:0.77rem;color:var(--text-dim);margin-top:3px">Internal / insider threats</div></div>
+          <div><div class="data-num" style="color:var(--lime)">₹17Cr</div><div style="font-size:0.77rem;color:var(--text-dim);margin-top:3px">Avg. cost per breach, India</div></div>
+          <div><div class="data-num" style="color:var(--cyan)">206d</div><div style="font-size:0.77rem;color:var(--text-dim);margin-top:3px">Avg. breach detection without AI</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ SYSTEMS ════════════════════════════════════════════════════ -->
+<section id="systems">
+  <div class="reveal">
+    <div class="section-chip violet">// Systems & Infrastructure Defended</div>
+    <h2 class="sec-title">Every system. <em><span class="grad">Every layer.</span></em></h2>
+    <p class="sec-sub">Ironwood integrates natively with the full spectrum of enterprise infrastructure — on-premise, hybrid, and cloud-native.</p>
+  </div>
+  <div class="sys-grid">
+    <div class="sys-card reveal rd1"><div class="sys-icon-wrap">🖥️</div><h3>Windows & Linux Servers</h3><p>Full EDR coverage including kernel-level process monitoring, memory scanning, and real-time file integrity checks.</p><span class="sys-badge">Covers 99% enterprise server OS</span></div>
+    <div class="sys-card reveal rd2"><div class="sys-icon-wrap">💻</div><h3>Employee Endpoints</h3><p>Lightweight agent deploys in minutes across laptops, desktops, and hybrid worker devices. Zero performance impact.</p><span class="sys-badge">Windows / macOS / Linux</span></div>
+    <div class="sys-card reveal rd3"><div class="sys-icon-wrap">☁️</div><h3>Cloud Workloads</h3><p>Agentless scanning of EC2, Azure VMs, GCP Compute, containers, and serverless functions. Runtime threat protection included.</p><span class="sys-badge">AWS · Azure · GCP · OCI</span></div>
+    <div class="sys-card reveal rd4"><div class="sys-icon-wrap">📱</div><h3>Mobile & BYOD</h3><p>UEM-integrated mobile threat defence detects jailbreaks, malicious apps, and risky network connections on iOS and Android.</p><span class="sys-badge">iOS & Android MDM/UEM</span></div>
+    <div class="sys-card reveal rd1"><div class="sys-icon-wrap">🔌</div><h3>Network Devices</h3><p>Monitors switches, routers, access points, and SD-WAN fabric for configuration drift, rogue devices, and protocol attacks.</p><span class="sys-badge">Cisco · Juniper · Fortinet · Aruba</span></div>
+    <div class="sys-card reveal rd2"><div class="sys-icon-wrap">🏭</div><h3>OT / Industrial Systems</h3><p>Passive, non-disruptive monitoring for SCADA, PLC, HMI, and ICS environments in manufacturing, energy, and utilities.</p><span class="sys-badge">IEC 62443 Compliant</span></div>
+    <div class="sys-card reveal rd3"><div class="sys-icon-wrap">🗄️</div><h3>Databases & Data Stores</h3><p>Real-time activity monitoring for MySQL, MSSQL, Oracle, MongoDB, Redis, and Elasticsearch. Prevents SQL injection and data exfil.</p><span class="sys-badge">DAM + DLP integrated</span></div>
+    <div class="sys-card reveal rd4"><div class="sys-icon-wrap">🔗</div><h3>APIs & Microservices</h3><p>Runtime API security with schema validation, abuse detection, and continuous inventory of all internal and external API endpoints.</p><span class="sys-badge">REST · GraphQL · gRPC</span></div>
+  </div>
+</section>
+
+<!-- ════ PRICING ════════════════════════════════════════════════════ -->
+<section id="pricing">
+  <div class="reveal">
+    <div class="section-chip gold">// Pricing — All in Indian Rupees</div>
+    <h2 class="sec-title">Transparent pricing.<br><em><span class="grad-coral">No surprises.</span></em></h2>
+    <p class="sec-sub">Every plan includes our core AI engine, 24×7 SOC support, and a 6-hour incident response SLA. Save 20% on annual billing.</p>
+  </div>
+  <div class="price-grid reveal rd1">
+
+    <!-- SENTINEL -->
+    <div class="p-card">
+      <div class="p-tier">Tier 01</div>
+      <div class="p-name">Sentinel</div>
+      <div class="p-price"><sup>₹</sup>4,999<span class="per"> /mo</span></div>
+      <div class="p-note">Up to 25 endpoints · Annual: ₹47,990/yr</div>
+      <div class="p-desc">Ideal for startups and small teams needing enterprise-grade protection without enterprise complexity.</div>
+      <ul class="p-feats">
+        <li>AI-powered EDR on 25 endpoints</li>
+        <li>External perimeter monitoring</li>
+        <li>Web Application Firewall (basic)</li>
+        <li>Email anti-phishing & anti-spam</li>
+        <li>DNS threat protection</li>
+        <li>CERT-In compliance dashboard</li>
+        <li>8×5 SOC support (email)</li>
+        <li>Fortnightly threat reports</li>
+      </ul>
+      <button class="p-btn">Start Free Trial →</button>
+    </div>
+
+    <!-- FORTRESS — FEATURED -->
+    <div class="p-card featured">
+      <div class="p-badge">Most Popular</div>
+      <div class="p-tier">Tier 02</div>
+      <div class="p-name">Fortress</div>
+      <div class="p-price"><sup>₹</sup>14,999<span class="per"> /mo</span></div>
+      <div class="p-note">Up to 100 endpoints · Annual: ₹1,43,990/yr</div>
+      <div class="p-desc">Full-stack protection across external and internal networks for growing SMEs and mid-market companies.</div>
+      <ul class="p-feats">
+        <li>EDR + XDR on 100 endpoints</li>
+        <li>Full external network defence suite</li>
+        <li>Internal network traffic analysis</li>
+        <li>Identity & access monitoring (AD/LDAP)</li>
+        <li>Cloud security posture (1 cloud)</li>
+        <li>Advanced SIEM — 90-day log retention</li>
+        <li>SOAR automated playbooks (10)</li>
+        <li>DPDP Act & ISO 27001 reporting</li>
+        <li>24×7 SOC — phone + email</li>
+        <li>Weekly executive threat briefings</li>
+      </ul>
+      <button class="p-btn">Get Fortress →</button>
+    </div>
+
+    <!-- CITADEL -->
+    <div class="p-card">
+      <div class="p-tier">Tier 03</div>
+      <div class="p-name">Citadel</div>
+      <div class="p-price"><sup>₹</sup>39,999<span class="per"> /mo</span></div>
+      <div class="p-note">Up to 500 endpoints · Annual: ₹3,83,990/yr</div>
+      <div class="p-desc">For large enterprises and regulated industries requiring comprehensive coverage and dedicated resources.</div>
+      <ul class="p-feats">
+        <li>Full XDR on 500 endpoints</li>
+        <li>Multi-cloud security posture (3 clouds)</li>
+        <li>OT/ICS & industrial system monitoring</li>
+        <li>Database activity monitoring (DAM)</li>
+        <li>Dark web & brand monitoring</li>
+        <li>SIEM — 1-year log retention</li>
+        <li>Unlimited SOAR playbooks</li>
+        <li>Privileged access management (PAM)</li>
+        <li>Dedicated Threat Intelligence Analyst</li>
+        <li>4-hour incident response SLA</li>
+        <li>SEBI / RBI / IRDAI compliance pack</li>
+      </ul>
+      <button class="p-btn">Get Citadel →</button>
+    </div>
+
+    <!-- ENTERPRISE -->
+    <div class="p-card">
+      <div class="p-tier">Tier 04</div>
+      <div class="p-name">Enterprise</div>
+      <div class="p-price" style="font-size:2rem;">Custom</div>
+      <div class="p-note">Unlimited endpoints · Multi-site · On-prem option</div>
+      <div class="p-desc">Tailored for PSUs, critical infrastructure, banking, and multinationals with complex requirements.</div>
+      <ul class="p-feats">
+        <li>Unlimited endpoints & sites</li>
+        <li>On-premise or air-gapped deployment</li>
+        <li>Custom AI model fine-tuning</li>
+        <li>Custom SOAR & API integrations</li>
+        <li>Red team / penetration testing (quarterly)</li>
+        <li>Dedicated 24×7 security engineer</li>
+        <li>1-hour P1 incident response SLA</li>
+        <li>Board-level risk reporting</li>
+        <li>Custom compliance frameworks</li>
+        <li>On-site training & workshops</li>
+      </ul>
+      <button class="p-btn">Contact Sales →</button>
+    </div>
+  </div>
+
+  <div class="p-note-box reveal rd2">
+    <strong>📌 Pricing Notes:</strong> All prices are in Indian Rupees (INR) and exclusive of GST (18%). Annual billing saves 20% vs. monthly. Additional endpoints: ₹120/endpoint/month (Sentinel), ₹100 (Fortress), ₹85 (Citadel). Government and educational pricing available. All plans include a 14-day free trial, no credit card required. Data centres in Mumbai and Hyderabad — compliant with Indian data residency requirements.
+  </div>
+</section>
+
+<!-- ════ TRUST ══════════════════════════════════════════════════════ -->
+<section id="trust">
+  <div class="reveal">
+    <div class="section-chip cyan">// Client Voices</div>
+    <h2 class="sec-title">Trusted by teams that <em><span class="grad">can't afford</span></em> to be breached</h2>
+  </div>
+  <div class="trust-grid">
+    <div class="t-card reveal rd1">
+      <div class="t-stars">★★★★★</div>
+      <blockquote>"Ironwood detected a supply chain compromise that our previous SIEM missed for 3 months. The autonomous response contained it in under 2 seconds. It paid for itself 100x over."</blockquote>
+      <div class="t-author">
+        <div class="t-avatar">RK</div>
+        <div><div class="t-name">Rajesh Krishnamurthy</div><div class="t-role">CISO · Fintech Unicorn, Bengaluru</div></div>
+      </div>
+    </div>
+    <div class="t-card reveal rd2">
+      <div class="t-stars">★★★★★</div>
+      <blockquote>"We're a 60-person startup. Sentinel gives us the same protection Fortune 500 companies have — at a price that's actually in our budget. The CERT-In dashboard alone is worth it."</blockquote>
+      <div class="t-author">
+        <div class="t-avatar">AS</div>
+        <div><div class="t-name">Ananya Sharma</div><div class="t-role">CTO · SaaS Startup, Pune</div></div>
+      </div>
+    </div>
+    <div class="t-card reveal rd3">
+      <div class="t-stars">★★★★★</div>
+      <blockquote>"The OT monitoring in Citadel is unlike anything we'd seen. Zero downtime during a targeted attack on our manufacturing floor. Our cyber insurance premiums dropped 40% post-deployment."</blockquote>
+      <div class="t-author">
+        <div class="t-avatar">MV</div>
+        <div><div class="t-name">Mahesh Varma</div><div class="t-role">VP IT · Manufacturing Enterprise, Chennai</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════ CTA ════════════════════════════════════════════════════════ -->
+<section id="cta-band">
+  <h2>Your next breach is already<br>being planned. Is Ironwood<br>defending you?</h2>
+  <p>Start your 14-day free trial today — no credit card, no lock-in. Full Fortress features included.</p>
+  <div class="cta-row">
+    <a href="#pricing" class="btn-primary">Start Free Trial — ₹0 →</a>
+    <a href="#" class="btn-ghost" onclick="openChat()">Ask Ironwood AI ↗</a>
+  </div>
+</section>
+
+<!-- ════ FOOTER ═════════════════════════════════════════════════════ -->
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <a href="#" class="nav-logo" style="font-size:1.2rem;">
+        <div class="logo-gem" style="width:26px;height:26px;"></div>
+        Iron<span class="accent">wood</span>
+      </a>
+      <p>Agentic AI Cybersecurity built for India. Defending businesses from the smallest startup to critical national infrastructure — autonomously, continuously, affordably.</p>
+      <div class="cert-row">
+        <span class="cert">CERT-In Empanelled</span>
+        <span class="cert">ISO 27001</span>
+        <span class="cert">SOC 2 Type II</span>
+        <span class="cert">DPDP Ready</span>
+      </div>
+    </div>
+    <div class="foot-col">
+      <h4>Platform</h4>
+      <ul>
+        <li><a href="#coverage">External Defence</a></li>
+        <li><a href="#coverage">Internal Defence</a></li>
+        <li><a href="#systems">Systems Covered</a></li>
+        <li><a href="case-studies.html">Case Studies</a></li>
+        <li><a href="analytics.html">Revenue Analytics</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Company</h4>
+      <ul>
+        <li><a href="#">About Ironwood</a></li>
+        <li><a href="reviews.html">Client Reviews</a></li>
+        <li><a href="#">Blog & Research</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div class="foot-col">
+      <h4>Legal & Support</h4>
+      <ul>
+        <li><a href="#">Privacy Policy</a></li>
+        <li><a href="#">Terms of Service</a></li>
+        <li><a href="#">SLA Agreement</a></li>
+        <li><a href="#">Security Trust Centre</a></li>
+        <li><a href="#">CERT-In Reports</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 Ironwood Technologies Pvt. Ltd. · CIN: U72900KA2021PTC000000 · Bengaluru, Karnataka, India</p>
+    <div style="display:flex;gap:8px;">
+      <span class="cert">MeitY Recognised</span>
+      <span class="cert">Startup India</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ════ CHATBOT ════════════════════════════════════════════════════ -->
+<button id="chat-fab" onclick="toggleChat()" title="Ask Ironwood AI">🛡️
+  <div class="fab-badge">AI</div>
+</button>
+
+<div id="chat-win">
+  <div class="chat-hdr">
+    <div class="chat-av">🛡️</div>
+    <div class="chat-info">
+      <strong>Ironwood Shield AI</strong>
+      <span>● Online — Cybersecurity Expert</span>
+    </div>
+    <button class="chat-x" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-msgs" id="chat-messages"></div>
+  <div class="qbtns" id="quick-btns">
+    <button class="qb" onclick="sendQuick('What is Zero Trust Architecture?')">Zero Trust?</button>
+    <button class="qb" onclick="sendQuick('How does the Fortress plan work?')">Fortress plan?</button>
+    <button class="qb" onclick="sendQuick('What is ransomware and how to prevent it?')">Ransomware</button>
+    <button class="qb" onclick="sendQuick('What is CERT-In compliance in India?')">CERT-In</button>
+  </div>
+  <div class="chat-inp-row">
+    <textarea id="chat-input" rows="1" placeholder="Ask any cybersecurity question…" onkeydown="handleEnter(event)" oninput="autoResize(this)"></textarea>
+    <button id="chat-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- ════ SCRIPTS ════════════════════════════════════════════════════ -->
+<script>
+  // ── Cursor ──────────────────────────────────────────────
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
+
+  // ── Scroll Reveal ────────────────────────────────────────
+  const io = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+  },{threshold:0.1});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+  // ── Bar Chart ────────────────────────────────────────────
+  const barIO = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.querySelectorAll('.bar-fill').forEach(b=>{b.style.width=b.dataset.w;});
+        barIO.unobserve(e.target);
+      }
+    });
+  },{threshold:0.3});
+  document.querySelectorAll('.bar-rows').forEach(g=>barIO.observe(g));
+
+  // ── Tabs ─────────────────────────────────────────────────
+  function switchTab(id,btn,cls){
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active','ext','int'));
+    document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+    btn.classList.add('active',cls);
+    const tc = document.getElementById('tab-'+id);
+    tc.classList.add('active');
+    tc.querySelectorAll('.reveal').forEach(el=>el.classList.add('visible'));
+  }
+
+  // ── Ticker ───────────────────────────────────────────────
+  const threats=[
+    {l:'BLOCKED',t:'Ransomware — Mumbai Node'},
+    {l:'BLOCKED',t:'SQL Injection — API Gateway'},
+    {l:'ALERT',t:'Port Scan from 185.220.x.x'},
+    {l:'PATCHED',t:'CVE-2025-0831 Zero-Day'},
+    {l:'BLOCKED',t:'Phishing Campaign — 2,840 emails'},
+    {l:'MONITORED',t:'Suspicious AD Login — 03:24 IST'},
+    {l:'BLOCKED',t:'DDoS 180 Gbps — Hyderabad DC'},
+    {l:'RESOLVED',t:'Insider Threat — Data Exfil Prevented'},
+    {l:'ALERT',t:'Exposed S3 Bucket — Remediated'},
+    {l:'BLOCKED',t:'Brute Force — RDP Port 3389'},
+    {l:'PATCHED',t:'Log4Shell variant detected'},
+    {l:'BLOCKED',t:'C2 Callback — 3 endpoints isolated'},
+  ];
+  const t2=[...threats,...threats];
+  document.getElementById('ticker').innerHTML=t2.map(t=>`<div class="ticker-item"><div class="ticker-dot"></div><span class="t-lbl">[${t.l}]</span><span class="t-txt">${t.t}</span></div>`).join('');
+
+  // ── Mobile Nav ───────────────────────────────────────────
+  function toggleNav(){
+    const nl=document.querySelector('.nav-links');
+    if(nl.style.display==='flex'){nl.style.display='none';return;}
+    nl.style.cssText='display:flex;flex-direction:column;position:absolute;top:66px;left:0;right:0;background:#08071A;padding:20px 5vw;border-bottom:1px solid #1E1C40;gap:18px;z-index:499;';
+  }
+
+  // ── Chatbot ──────────────────────────────────────────────
+  let chatOpen=false, chatHistory=[], isTyping=false;
+  function toggleChat(){chatOpen=!chatOpen;document.getElementById('chat-win').classList.toggle('open',chatOpen);if(chatOpen&&chatHistory.length===0)greet();}
+  function openChat(){if(!chatOpen)toggleChat();}
+  function greet(){addMsg('bot',"Hello! I'm Ironwood Shield AI 🛡️\n\nI'm your cybersecurity expert. Ask me about threats, defences, compliance, Ironwood's plans, or how to protect your organisation.\n\nWhat can I help you with today?");}
+
+  function addMsg(role,text){
+    const msgs=document.getElementById('chat-messages');
+    const d=document.createElement('div');d.className=`msg ${role}`;
+    const b=document.createElement('div');b.className='msg-b';
+    b.innerHTML=text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/`(.*?)`/g,'<code style="background:rgba(79,70,255,0.15);padding:1px 5px;border-radius:3px;font-family:var(--font-mono);font-size:0.78em;">$1</code>');
+    const ts=document.createElement('div');ts.className='msg-t';
+    ts.textContent=new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    d.append(b,ts);msgs.append(d);msgs.scrollTop=msgs.scrollHeight;
+    document.getElementById('quick-btns').style.display='none';
+  }
+  function showTyping(){const msgs=document.getElementById('chat-messages');const d=document.createElement('div');d.className='msg bot';d.id='typing-msg';const b=document.createElement('div');b.className='msg-b';b.innerHTML='<div class="typing-wrap"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>';d.appendChild(b);msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;}
+  function removeTyping(){const t=document.getElementById('typing-msg');if(t)t.remove();}
+
+  async function sendMessage(){
+    const inp=document.getElementById('chat-input');
+    const text=inp.value.trim();
+    if(!text||isTyping)return;
+    inp.value='';inp.style.height='auto';
+    addMsg('user',text);
+    chatHistory.push({role:'user',content:text});
+    isTyping=true;document.getElementById('chat-send').disabled=true;
+    showTyping();
+    try{
+      const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:chatHistory})});
+      const data=await res.json();
+      removeTyping();
+      const reply=data.reply||data.error||'Sorry, an error occurred. Please try again.';
+      addMsg('bot',reply);
+      chatHistory.push({role:'assistant',content:reply});
+    }catch(err){removeTyping();addMsg('bot','Connection error. Please try again.');}
+    isTyping=false;document.getElementById('chat-send').disabled=false;
+  }
+  function sendQuick(q){document.getElementById('chat-input').value=q;sendMessage();}
+  function handleEnter(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+  function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+  // initial tab reveal
+  document.querySelectorAll('#tab-external .reveal').forEach(el=>setTimeout(()=>el.classList.add('visible'),300));
+</script>
+</body>
+</html>

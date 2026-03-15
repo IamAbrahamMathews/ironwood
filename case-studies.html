@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Case Studies — Ironwood AI Cybersecurity</title>
+  <link rel="stylesheet" href="ironwood.css"/>
+  <style>
+    /* ── PAGE-SPECIFIC STYLES ── */
+    .cs-grid { display:grid; grid-template-columns:1fr 1fr; gap:28px; }
+    .cs-card {
+      background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-xl);
+      overflow:hidden; transition:transform .3s,box-shadow .3s;
+    }
+    .cs-card:hover { transform:translateY(-6px); }
+    .cs-card:nth-child(1):hover { box-shadow:0 20px 60px rgba(79,70,255,.15); }
+    .cs-card:nth-child(2):hover { box-shadow:0 20px 60px rgba(255,79,106,.12); }
+    .cs-card:nth-child(3):hover { box-shadow:0 20px 60px rgba(184,255,53,.10); }
+    .cs-card:nth-child(4):hover { box-shadow:0 20px 60px rgba(0,229,255,.10); }
+    .cs-card:nth-child(5):hover { box-shadow:0 20px 60px rgba(191,95,255,.12); }
+    .cs-card:nth-child(6):hover { box-shadow:0 20px 60px rgba(255,184,48,.10); }
+
+    .cs-header {
+      padding:28px 28px 20px; position:relative; overflow:hidden;
+      border-bottom:1px solid var(--border);
+    }
+    .cs-header::before { content:''; position:absolute; inset:0; opacity:.06; }
+    .cs-card:nth-child(1) .cs-header::before { background:var(--indigo); }
+    .cs-card:nth-child(2) .cs-header::before { background:var(--coral); }
+    .cs-card:nth-child(3) .cs-header::before { background:var(--lime); }
+    .cs-card:nth-child(4) .cs-header::before { background:var(--cyan); }
+    .cs-card:nth-child(5) .cs-header::before { background:var(--violet); }
+    .cs-card:nth-child(6) .cs-header::before { background:var(--gold); }
+
+    .cs-industry {
+      font-family:var(--font-mono); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase;
+      padding:4px 12px; border-radius:var(--r-2xl); display:inline-block; margin-bottom:14px;
+    }
+    .cs-card:nth-child(1) .cs-industry { color:var(--indigo-3); border:1px solid rgba(79,70,255,.3); background:rgba(79,70,255,.08); }
+    .cs-card:nth-child(2) .cs-industry { color:var(--coral-2); border:1px solid rgba(255,79,106,.3); background:rgba(255,79,106,.08); }
+    .cs-card:nth-child(3) .cs-industry { color:var(--lime); border:1px solid rgba(184,255,53,.3); background:rgba(184,255,53,.07); }
+    .cs-card:nth-child(4) .cs-industry { color:var(--cyan); border:1px solid rgba(0,229,255,.3); background:rgba(0,229,255,.07); }
+    .cs-card:nth-child(5) .cs-industry { color:var(--violet-2); border:1px solid rgba(191,95,255,.3); background:rgba(191,95,255,.08); }
+    .cs-card:nth-child(6) .cs-industry { color:var(--gold); border:1px solid rgba(255,184,48,.3); background:rgba(255,184,48,.07); }
+
+    .cs-company { font-family:var(--font-display); font-size:1.4rem; font-weight:900; color:var(--text-white); margin-bottom:4px; }
+    .cs-location { font-family:var(--font-mono); font-size:.68rem; color:var(--text-dim); }
+    .cs-plan-badge {
+      position:absolute; top:24px; right:24px;
+      font-family:var(--font-mono); font-size:.62rem; padding:5px 12px;
+      border-radius:var(--r-2xl); border:1px solid var(--border-2); color:var(--text-muted);
+      background:var(--bg-raised);
+    }
+
+    .cs-body { padding:24px 28px 28px; }
+
+    .cs-challenge-label {
+      font-family:var(--font-mono); font-size:.62rem; color:var(--text-dim); text-transform:uppercase;
+      letter-spacing:.1em; margin-bottom:6px;
+    }
+    .cs-challenge { font-size:.88rem; color:var(--text-soft); line-height:1.65; margin-bottom:20px; }
+
+    .cs-solution-label {
+      font-family:var(--font-mono); font-size:.62rem; text-transform:uppercase; letter-spacing:.1em; margin-bottom:6px;
+    }
+    .cs-card:nth-child(1) .cs-solution-label { color:var(--indigo-3); }
+    .cs-card:nth-child(2) .cs-solution-label { color:var(--coral); }
+    .cs-card:nth-child(3) .cs-solution-label { color:var(--lime); }
+    .cs-card:nth-child(4) .cs-solution-label { color:var(--cyan); }
+    .cs-card:nth-child(5) .cs-solution-label { color:var(--violet-2); }
+    .cs-card:nth-child(6) .cs-solution-label { color:var(--gold); }
+
+    .cs-solution { font-size:.88rem; color:var(--text-soft); line-height:1.65; margin-bottom:24px; }
+
+    .cs-results { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-bottom:24px; }
+    .cs-result {
+      background:var(--bg-raised); border:1px solid var(--border); border-radius:var(--r-md);
+      padding:14px 12px; text-align:center;
+    }
+    .cs-result-val {
+      font-family:var(--font-display); font-size:1.5rem; font-weight:900;
+      line-height:1; letter-spacing:-0.03em; margin-bottom:4px;
+    }
+    .cs-card:nth-child(1) .cs-result-val { color:var(--indigo-3); }
+    .cs-card:nth-child(2) .cs-result-val { color:var(--coral); }
+    .cs-card:nth-child(3) .cs-result-val { color:var(--lime); }
+    .cs-card:nth-child(4) .cs-result-val { color:var(--cyan); }
+    .cs-card:nth-child(5) .cs-result-val { color:var(--violet-2); }
+    .cs-card:nth-child(6) .cs-result-val { color:var(--gold); }
+
+    .cs-result-lbl { font-family:var(--font-mono); font-size:.58rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.07em; }
+
+    .cs-quote {
+      background:var(--bg-raised); border-left:3px solid; border-radius:0 var(--r-md) var(--r-md) 0;
+      padding:14px 16px; font-size:.85rem; color:var(--text-soft); line-height:1.65;
+      font-style:italic; margin-bottom:20px;
+    }
+    .cs-card:nth-child(1) .cs-quote { border-color:var(--indigo); }
+    .cs-card:nth-child(2) .cs-quote { border-color:var(--coral); }
+    .cs-card:nth-child(3) .cs-quote { border-color:var(--lime); }
+    .cs-card:nth-child(4) .cs-quote { border-color:var(--cyan); }
+    .cs-card:nth-child(5) .cs-quote { border-color:var(--violet); }
+    .cs-card:nth-child(6) .cs-quote { border-color:var(--gold); }
+
+    .cs-quote-author { font-family:var(--font-mono); font-size:.62rem; color:var(--text-dim); margin-top:8px; font-style:normal; }
+
+    .cs-tags { display:flex; flex-wrap:wrap; gap:6px; }
+    .cs-tag {
+      font-family:var(--font-mono); font-size:.6rem; padding:4px 10px;
+      border-radius:var(--r-xs); border:1px solid var(--border-2); color:var(--text-dim);
+      text-transform:uppercase; letter-spacing:.05em;
+    }
+
+    /* Timeline section */
+    .timeline-wrap { max-width:820px; margin:0 auto; }
+    .timeline-item { display:flex; gap:28px; position:relative; padding-bottom:44px; }
+    .timeline-item:last-child { padding-bottom:0; }
+    .timeline-left { display:flex; flex-direction:column; align-items:center; flex-shrink:0; }
+    .tl-dot {
+      width:44px; height:44px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center; font-size:1.1rem;
+      border:2px solid;
+    }
+    .tl-dot.ind { background:rgba(79,70,255,.1); border-color:var(--indigo); }
+    .tl-dot.cor { background:rgba(255,79,106,.1); border-color:var(--coral); }
+    .tl-dot.lim { background:rgba(184,255,53,.07); border-color:var(--lime); }
+    .tl-dot.cyn { background:rgba(0,229,255,.07); border-color:var(--cyan); }
+    .tl-line { flex:1; width:1px; background:var(--border); margin-top:6px; }
+    .timeline-item:last-child .tl-line { display:none; }
+    .tl-content { flex:1; padding-top:8px; padding-bottom:12px; }
+    .tl-time { font-family:var(--font-mono); font-size:.65rem; color:var(--text-dim); margin-bottom:6px; }
+    .tl-title { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--text-white); margin-bottom:8px; }
+    .tl-desc { font-size:.88rem; color:var(--text-muted); line-height:1.65; }
+
+    /* FEATURED (wide) case study */
+    .cs-featured {
+      background:linear-gradient(135deg, rgba(79,70,255,.1) 0%, var(--bg-card) 60%);
+      border:1px solid rgba(79,70,255,.3); border-radius:var(--r-xl);
+      padding:44px 48px; margin-bottom:48px;
+      display:grid; grid-template-columns:1fr 1fr; gap:48px; align-items:center;
+    }
+    .cs-featured .feat-label { font-family:var(--font-mono); font-size:.65rem; color:var(--indigo-3); text-transform:uppercase; letter-spacing:.12em; margin-bottom:12px; }
+    .cs-featured h3 { font-family:var(--font-display); font-size:2rem; font-weight:900; color:var(--text-white); line-height:1.05; letter-spacing:-0.02em; margin-bottom:16px; }
+    .cs-featured p { font-size:.92rem; color:var(--text-muted); line-height:1.75; margin-bottom:24px; }
+    .cs-featured-stats { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .feat-stat { background:var(--bg-raised); border:1px solid var(--border); border-radius:var(--r-lg); padding:18px 16px; }
+    .feat-stat-val { font-family:var(--font-display); font-size:2rem; font-weight:900; color:var(--indigo-3); letter-spacing:-0.03em; line-height:1; }
+    .feat-stat-lbl { font-family:var(--font-mono); font-size:.62rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.08em; margin-top:5px; }
+
+    @media(max-width:960px){
+      .cs-grid { grid-template-columns:1fr; }
+      .cs-featured { grid-template-columns:1fr; gap:32px; padding:32px; }
+    }
+    @media(max-width:620px){
+      .cs-results { grid-template-columns:1fr 1fr; }
+      .cs-featured-stats { grid-template-columns:1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-gem"></div>Iron<span class="accent">wood</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">Platform</a></li>
+    <li><a href="index.html#coverage">Coverage</a></li>
+    <li><a href="case-studies.html" class="active">Case Studies</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
+    <li><a href="reviews.html">Reviews</a></li>
+    <li><a href="index.html#pricing">Pricing</a></li>
+  </ul>
+  <button class="nav-cta" onclick="location.href='index.html#pricing'">Get Protected</button>
+  <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- PAGE HERO -->
+<div class="page-hero">
+  <div class="mesh"></div>
+  <div class="page-hero-inner">
+    <div class="page-chip ind">// Real-World Deployments</div>
+    <h1 class="page-title">Agentic AI in Action —<br><span class="grad">Verified Successes</span></h1>
+    <p class="page-sub">Six in-depth case studies demonstrating how Ironwood's autonomous AI agents detected, contained, and neutralised real cyber threats across Indian enterprises — from fintech to heavy industry.</p>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-band"><div class="ticker-track" id="ticker"></div></div>
+
+<!-- FEATURED CASE STUDY -->
+<section class="content-section" style="background:var(--bg-1);">
+  <div class="section-chip violet reveal">// Featured Case Study</div>
+  <div class="cs-featured reveal rd1">
+    <div>
+      <div class="feat-label">🏆 Case of the Year — 2024</div>
+      <h3>How Ironwood stopped a ₹340 Crore supply-chain attack on India's largest private bank</h3>
+      <p>StellarBank (name anonymised) was targeted by a sophisticated APT group that had already compromised a third-party payroll vendor. Ironwood's multi-agent system detected anomalous lateral movement at 02:14 IST — 18 minutes after initial breach — and autonomously isolated 47 endpoints before a single rupee was moved.</p>
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="#case-1" class="btn-sm">Read Full Case →</a>
+        <a href="analytics.html" class="btn-ghost" style="font-size:.82rem;padding:9px 20px;">View Revenue Impact</a>
+      </div>
+    </div>
+    <div class="cs-featured-stats">
+      <div class="feat-stat"><div class="feat-stat-val">₹340Cr</div><div class="feat-stat-lbl">Attack Value Blocked</div></div>
+      <div class="feat-stat"><div class="feat-stat-val" style="color:var(--coral)">18min</div><div class="feat-stat-lbl">Detection Time</div></div>
+      <div class="feat-stat"><div class="feat-stat-val" style="color:var(--lime)">47</div><div class="feat-stat-lbl">Endpoints Auto-Isolated</div></div>
+      <div class="feat-stat"><div class="feat-stat-val" style="color:var(--cyan)">0</div><div class="feat-stat-lbl">Data Records Exfiltrated</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SIX CASE STUDIES GRID -->
+<section class="content-section" style="background:var(--bg-0);">
+  <div class="section-chip cyan reveal">// Case Studies</div>
+  <h2 class="sec-title reveal rd1">Six enterprises. <em><span class="grad-lime">Six threats stopped.</span></em></h2>
+  <p class="sec-sub reveal rd2">Every case below represents a live deployment where Ironwood's agentic AI operated autonomously — no human intervention required during the critical response window.</p>
+
+  <div class="cs-grid">
+
+    <!-- CASE 1 -->
+    <div class="cs-card reveal rd1" id="case-1">
+      <div class="cs-header">
+        <span class="cs-industry">Banking & Fintech</span>
+        <div class="cs-plan-badge">Citadel Plan</div>
+        <div class="cs-company">StellarBank Pvt. Ltd.</div>
+        <div class="cs-location">📍 Mumbai, Maharashtra</div>
+      </div>
+      <div class="cs-body">
+        <div class="cs-challenge-label">// The Challenge</div>
+        <div class="cs-challenge">A nation-state APT group (tracked as TUNGSTEN-9) compromised a third-party payroll vendor and used their legitimate VPN credentials to move laterally into StellarBank's internal payment systems. Traditional SIEM tools produced no alerts — the attacker blended in as a legitimate contractor session.</div>
+        <div class="cs-solution-label">// Ironwood's Agentic Response</div>
+        <div class="cs-solution">Ironwood's UEBA agent flagged a 340% deviation in the contractor account's access patterns at 02:14 IST. The Identity Protection agent cross-correlated this with an unusual SWIFT message drafting activity. Within 0.8 seconds, the Isolation Agent quarantined 47 affected endpoints, revoked all active sessions, and triggered an automated CERT-In incident report. The Threat Intel agent attributed the attack to TUNGSTEN-9 within 4 minutes using dark web IOC correlation.</div>
+        <div class="cs-results">
+          <div class="cs-result"><div class="cs-result-val">₹340Cr</div><div class="cs-result-lbl">Loss Prevented</div></div>
+          <div class="cs-result"><div class="cs-result-val">0.8s</div><div class="cs-result-lbl">Auto-Response</div></div>
+          <div class="cs-result"><div class="cs-result-val">0</div><div class="cs-result-lbl">Data Leaked</div></div>
+        </div>
+        <div class="cs-quote">"The attack was completely invisible to our SOC team. Ironwood acted before any human even knew there was an incident. That's the future of cybersecurity."<div class="cs-quote-author">— CISO, StellarBank (Identity protected)</div></div>
+        <div class="cs-tags"><span class="cs-tag">APT</span><span class="cs-tag">UEBA</span><span class="cs-tag">Supply Chain</span><span class="cs-tag">SWIFT Security</span><span class="cs-tag">CERT-In</span></div>
+      </div>
+    </div>
+
+    <!-- CASE 2 -->
+    <div class="cs-card reveal rd2">
+      <div class="cs-header">
+        <span class="cs-industry">Manufacturing & OT</span>
+        <div class="cs-plan-badge">Citadel Plan</div>
+        <div class="cs-company">Bharat Precision Works</div>
+        <div class="cs-location">📍 Pune, Maharashtra</div>
+      </div>
+      <div class="cs-body">
+        <div class="cs-challenge-label">// The Challenge</div>
+        <div class="cs-challenge">A ransomware group (LockBit 4.0 variant) penetrated the corporate IT network through a phishing email and began pivoting toward the OT/SCADA network controlling 14 CNC machining lines. A successful attack would have halted ₹28Cr/day in production and potentially damaged irreplaceable precision tooling.</div>
+        <div class="cs-solution-label">// Ironwood's Agentic Response</div>
+        <div class="cs-solution">Ironwood's EDR agent detected the ransomware staging behaviour (shadow copy deletion, encryption key generation) on a Windows endpoint and immediately quarantined it. The OT Monitoring agent detected the lateral movement attempt via a protocol bridge at the IT/OT DMZ and erected a network segmentation block. All 14 production lines continued without a second of interruption. The SOAR playbook automatically notified plant management and legal within 90 seconds.</div>
+        <div class="cs-results">
+          <div class="cs-result"><div class="cs-result-val">14</div><div class="cs-result-lbl">Lines Protected</div></div>
+          <div class="cs-result"><div class="cs-result-val">0s</div><div class="cs-result-lbl">Downtime</div></div>
+          <div class="cs-result"><div class="cs-result-val">₹28Cr</div><div class="cs-result-lbl">/day Saved</div></div>
+        </div>
+        <div class="cs-quote">"Our insurance premiums dropped 42% after the Ironwood deployment. The underwriters were more impressed by the case study than we were."<div class="cs-quote-author">— VP Operations, Bharat Precision Works</div></div>
+        <div class="cs-tags"><span class="cs-tag">Ransomware</span><span class="cs-tag">OT/ICS</span><span class="cs-tag">SCADA</span><span class="cs-tag">IT/OT Segmentation</span></div>
+      </div>
+    </div>
+
+    <!-- CASE 3 -->
+    <div class="cs-card reveal rd1">
+      <div class="cs-header">
+        <span class="cs-industry">Healthcare & Pharma</span>
+        <div class="cs-plan-badge">Fortress Plan</div>
+        <div class="cs-company">MediBridge Hospitals</div>
+        <div class="cs-location">📍 Bengaluru, Karnataka</div>
+      </div>
+      <div class="cs-body">
+        <div class="cs-challenge-label">// The Challenge</div>
+        <div class="cs-challenge">An insider threat — a disgruntled database administrator — was exfiltrating patient records (2.4M records containing Aadhaar-linked health data) to a private cloud storage account. The exfiltration was designed to mimic routine database backup traffic to evade detection. DPDP Act exposure was estimated at ₹12Cr in penalties.</div>
+        <div class="cs-solution-label">// Ironwood's Agentic Response</div>
+        <div class="cs-solution">Ironwood's DLP agent detected a 2,300% spike in outbound encrypted traffic from the DBA's workstation at 23:40 IST. The UEBA agent simultaneously identified that the destination IP was not in the approved backup destinations registry. The agent automatically revoked the user's database credentials, blocked the upload mid-transfer (only 0.3% of records were transferred before blocking), and escalated to HR and Legal with full forensic evidence packages.</div>
+        <div class="cs-results">
+          <div class="cs-result"><div class="cs-result-val">99.7%</div><div class="cs-result-lbl">Records Protected</div></div>
+          <div class="cs-result"><div class="cs-result-val">₹12Cr</div><div class="cs-result-lbl">Penalty Avoided</div></div>
+          <div class="cs-result"><div class="cs-result-val">4min</div><div class="cs-result-lbl">Full Resolution</div></div>
+        </div>
+        <div class="cs-quote">"Without Ironwood we'd be on the front page of every newspaper. Instead we had a full forensic report ready for the DPDP compliance audit the next morning."<div class="cs-quote-author">— CTO, MediBridge Hospitals</div></div>
+        <div class="cs-tags"><span class="cs-tag">Insider Threat</span><span class="cs-tag">DPDP Act</span><span class="cs-tag">DLP</span><span class="cs-tag">UEBA</span><span class="cs-tag">Healthcare</span></div>
+      </div>
+    </div>
+
+    <!-- CASE 4 -->
+    <div class="cs-card reveal rd2">
+      <div class="cs-header">
+        <span class="cs-industry">E-Commerce & Retail</span>
+        <div class="cs-plan-badge">Fortress Plan</div>
+        <div class="cs-company">KartZone Technologies</div>
+        <div class="cs-location">📍 Hyderabad, Telangana</div>
+      </div>
+      <div class="cs-body">
+        <div class="cs-challenge-label">// The Challenge</div>
+        <div class="cs-challenge">During the Diwali sale (peak traffic: 4.2M concurrent users), KartZone's payment API was targeted by a coordinated bot attack executing credential stuffing at 280,000 attempts per minute. The attackers were also attempting card-not-present fraud using 1.8M previously leaked credential pairs.</div>
+        <div class="cs-solution-label">// Ironwood's Agentic Response</div>
+        <div class="cs-solution">Ironwood's API Security agent detected the anomalous login velocity at T+3 seconds and applied progressive friction — first CAPTCHA, then SMS OTP, then full block — to suspected bot traffic while leaving genuine users unaffected. The WAF agent dynamically updated blocking rules every 90 seconds as the attackers rotated IP ranges. Of 280,000 malicious attempts per minute, 99.98% were blocked. Zero legitimate customers were locked out during the entire 6-hour attack window.</div>
+        <div class="cs-results">
+          <div class="cs-result"><div class="cs-result-val">99.98%</div><div class="cs-result-lbl">Bots Blocked</div></div>
+          <div class="cs-result"><div class="cs-result-val">₹0</div><div class="cs-result-lbl">Fraud Loss</div></div>
+          <div class="cs-result"><div class="cs-result-val">0</div><div class="cs-result-lbl">Legit Lockouts</div></div>
+        </div>
+        <div class="cs-quote">"Our biggest sale day ever — and we didn't even know we were under attack until Ironwood's post-incident report landed in our inbox. That's exactly what we paid for."<div class="cs-quote-author">— Head of Engineering, KartZone Technologies</div></div>
+        <div class="cs-tags"><span class="cs-tag">Credential Stuffing</span><span class="cs-tag">Bot Mitigation</span><span class="cs-tag">WAF</span><span class="cs-tag">API Security</span></div>
+      </div>
+    </div>
+
+    <!-- CASE 5 -->
+    <div class="cs-card reveal rd1">
+      <div class="cs-header">
+        <span class="cs-industry">Government & PSU</span>
+        <div class="cs-plan-badge">Enterprise Plan</div>
+        <div class="cs-company">State Power Distribution Corp.</div>
+        <div class="cs-location">📍 Lucknow, Uttar Pradesh</div>
+      </div>
+      <div class="cs-body">
+        <div class="cs-challenge-label">// The Challenge</div>
+        <div class="cs-challenge">A critical infrastructure attack targeting the SCADA systems managing power distribution for 8.4 million households. The attackers (suspected state-sponsored) deployed a custom ICS-aware wiper malware designed to destroy relay configurations and cause cascading grid failures across three districts.</div>
+        <div class="cs-solution-label">// Ironwood's Agentic Response</div>
+        <div class="cs-solution">Ironwood's OT Monitoring agent detected the malware's reconnaissance phase (unusual Modbus polling patterns) 3 hours before the destructive payload was scheduled to execute. The SOAR agent alerted the CERT-In national cyber crisis team while simultaneously creating immutable backup snapshots of all relay configurations. The malware was isolated to a single historian server before it could reach any operational systems. Full forensic attribution package was delivered to national security authorities within 2 hours.</div>
+        <div class="cs-results">
+          <div class="cs-result"><div class="cs-result-val">8.4M</div><div class="cs-result-lbl">Households Safe</div></div>
+          <div class="cs-result"><div class="cs-result-val">3hr</div><div class="cs-result-lbl">Early Detection</div></div>
+          <div class="cs-result"><div class="cs-result-val">100%</div><div class="cs-result-lbl">Grid Uptime</div></div>
+        </div>
+        <div class="cs-quote">"This was a sophisticated, nation-state level attack on critical infrastructure. Ironwood's early detection was the difference between a near-miss and a national emergency."<div class="cs-quote-author">— Director IT Security, State Power Distribution Corp.</div></div>
+        <div class="cs-tags"><span class="cs-tag">Critical Infrastructure</span><span class="cs-tag">ICS Wiper</span><span class="cs-tag">SCADA</span><span class="cs-tag">CERT-In</span><span class="cs-tag">APT</span></div>
+      </div>
+    </div>
+
+    <!-- CASE 6 -->
+    <div class="cs-card reveal rd2">
+      <div class="cs-header">
+        <span class="cs-industry">EdTech & SaaS</span>
+        <div class="cs-plan-badge">Sentinel Plan</div>
+        <div class="cs-company">LearnSpark Edutech</div>
+        <div class="cs-location">📍 Chennai, Tamil Nadu</div>
+      </div>
+      <div class="cs-body">
+        <div class="cs-challenge-label">// The Challenge</div>
+        <div class="cs-challenge">LearnSpark, a 45-person startup, was targeted by a business email compromise (BEC) attack that successfully impersonated the CFO and nearly authorised a ₹62L fraudulent wire transfer to a Hong Kong account. The attack used a lookalike domain and AI-generated voice note to bypass human verification.</div>
+        <div class="cs-solution-label">// Ironwood's Agentic Response</div>
+        <div class="cs-solution">Ironwood's Email Security agent flagged the lookalike domain (learn-sp4rk.com vs learnspark.com) and the unusual DMARC configuration. The agent placed the email in a high-risk quarantine and sent an automated alert to the Finance team with a full header analysis. The AI-generated voice note was identified using Ironwood's deepfake audio detection module. The wire transfer was never initiated. Total exposure time: 4 minutes from email receipt to full quarantine and alert.</div>
+        <div class="cs-results">
+          <div class="cs-result"><div class="cs-result-val">₹62L</div><div class="cs-result-lbl">Transfer Blocked</div></div>
+          <div class="cs-result"><div class="cs-result-val">4min</div><div class="cs-result-lbl">Detection Time</div></div>
+          <div class="cs-result"><div class="cs-result-val">100%</div><div class="cs-result-lbl">AI Detection</div></div>
+        </div>
+        <div class="cs-quote">"We're 45 people. We don't have a CISO. Ironwood Sentinel literally saved our company from a sophisticated fraud that tricked our own CFO."<div class="cs-quote-author">— CEO, LearnSpark Edutech</div></div>
+        <div class="cs-tags"><span class="cs-tag">BEC</span><span class="cs-tag">Deepfake Audio</span><span class="cs-tag">DMARC</span><span class="cs-tag">Email Security</span></div>
+      </div>
+    </div>
+
+  </div><!-- /.cs-grid -->
+</section>
+
+<!-- RESPONSE TIMELINE -->
+<section class="content-section" style="background:var(--bg-1);">
+  <div class="section-chip coral reveal">// Agentic Response Timeline</div>
+  <h2 class="sec-title reveal rd1">From breach to <em><span class="grad-coral">containment</span></em> — how it happens</h2>
+  <p class="sec-sub reveal rd2">Ironwood's multi-agent architecture runs all response stages in parallel, not sequentially. Here's the anatomy of a typical incident response.</p>
+  <div class="timeline-wrap">
+    <div class="timeline-item reveal rd1">
+      <div class="timeline-left"><div class="tl-dot ind">🔍</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="tl-time">T + 0.0s — Detection</div>
+        <div class="tl-title">Anomaly Detected by Behavioural AI</div>
+        <div class="tl-desc">The UEBA agent detects a statistically significant deviation from the baseline. Simultaneously, EDR, NDR, and DNS agents correlate signals. A threat confidence score is computed within 200ms.</div>
+      </div>
+    </div>
+    <div class="timeline-item reveal rd2">
+      <div class="timeline-left"><div class="tl-dot cor">⚡</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="tl-time">T + 0.8s — Containment</div>
+        <div class="tl-title">Autonomous Isolation & Credential Revocation</div>
+        <div class="tl-desc">If confidence score exceeds threshold, the Isolation Agent quarantines affected endpoints, the IAM Agent revokes active sessions, and firewall rules are updated — all within one second, all without human approval.</div>
+      </div>
+    </div>
+    <div class="timeline-item reveal rd3">
+      <div class="timeline-left"><div class="tl-dot lim">🧠</div><div class="tl-line"></div></div>
+      <div class="tl-content">
+        <div class="tl-time">T + 4 minutes — Investigation</div>
+        <div class="tl-title">Automated Root Cause Analysis</div>
+        <div class="tl-desc">The Forensics Agent reconstructs the full attack timeline, correlates with threat intelligence databases, and attributes the attack vector. A preliminary incident report is generated in plain language.</div>
+      </div>
+    </div>
+    <div class="timeline-item reveal rd4">
+      <div class="timeline-left"><div class="tl-dot cyn">📋</div></div>
+      <div class="tl-content">
+        <div class="tl-time">T + 90 seconds to 6 hours — Notification & Remediation</div>
+        <div class="tl-title">CERT-In Filing, Stakeholder Alerts, System Recovery</div>
+        <div class="tl-desc">SOAR playbooks handle CERT-In mandatory reporting (within required timelines), notify legal, HR, and executives, and guide IT teams through verified remediation steps. Clean restore points are validated before systems come back online.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <a href="index.html" class="nav-logo" style="font-size:1.1rem;"><div class="logo-gem" style="width:26px;height:26px;"></div>Iron<span class="accent">wood</span></a>
+      <p>Agentic AI Cybersecurity built for India. Defending businesses from the smallest startup to critical national infrastructure.</p>
+      <div class="cert-row"><span class="cert">CERT-In Empanelled</span><span class="cert">ISO 27001</span><span class="cert">SOC 2 Type II</span><span class="cert">DPDP Ready</span></div>
+    </div>
+    <div class="foot-col"><h4>Pages</h4><ul><li><a href="index.html">Home</a></li><li><a href="case-studies.html">Case Studies</a></li><li><a href="analytics.html">Analytics</a></li><li><a href="reviews.html">Reviews</a></li><li><a href="index.html#pricing">Pricing</a></li></ul></div>
+    <div class="foot-col"><h4>Platform</h4><ul><li><a href="index.html#coverage">External Defence</a></li><li><a href="index.html#coverage">Internal Defence</a></li><li><a href="index.html#systems">Systems Covered</a></li><li><a href="index.html#growth">Market Data</a></li></ul></div>
+    <div class="foot-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">SLA Agreement</a></li><li><a href="#">CERT-In Reports</a></li></ul></div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 Ironwood Technologies Pvt. Ltd. · Bengaluru, Karnataka, India</p>
+    <div style="display:flex;gap:8px;"><span class="cert">MeitY Recognised</span><span class="cert">Startup India</span></div>
+  </div>
+</footer>
+
+<!-- CHATBOT -->
+<button id="chat-fab" onclick="toggleChat()" title="Ask Ironwood AI">🛡️<div class="fab-badge">AI</div></button>
+<div id="chat-win">
+  <div class="chat-hdr"><div class="chat-av">🛡️</div><div class="chat-info"><strong>Ironwood Shield AI</strong><span>● Online</span></div><button class="chat-x" onclick="toggleChat()">✕</button></div>
+  <div class="chat-msgs" id="chat-messages"></div>
+  <div class="qbtns" id="quick-btns">
+    <button class="qb" onclick="sendQuick('Tell me about the StellarBank case study')">StellarBank attack</button>
+    <button class="qb" onclick="sendQuick('How does Ironwood handle ransomware on OT systems?')">OT Ransomware</button>
+    <button class="qb" onclick="sendQuick('What is BEC fraud and how to prevent it?')">BEC fraud</button>
+  </div>
+  <div class="chat-inp-row"><textarea id="chat-input" rows="1" placeholder="Ask about these case studies…" onkeydown="handleEnter(event)" oninput="autoResize(this)"></textarea><button id="chat-send" onclick="sendMessage()">➤</button></div>
+</div>
+
+<script src="ironwood.js"></script>
+</body>
+</html>

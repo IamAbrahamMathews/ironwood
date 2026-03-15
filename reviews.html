@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Client Reviews — Ironwood AI Cybersecurity</title>
+  <link rel="stylesheet" href="ironwood.css"/>
+  <style>
+    /* ── OVERALL SCORE STRIP ── */
+    .score-strip {
+      display:grid; grid-template-columns:repeat(4,1fr); gap:20px;
+      margin-bottom:56px;
+    }
+    .score-card {
+      background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg);
+      padding:28px 22px; text-align:center;
+    }
+    .score-big { font-family:var(--font-display); font-size:3rem; font-weight:900; line-height:1; letter-spacing:-0.04em; color:var(--text-white); }
+    .score-big .sc1{color:var(--lime)} .score-big .sc2{color:var(--cyan)} .score-big .sc3{color:var(--indigo-3)} .score-big .sc4{color:var(--coral)}
+    .score-stars { font-size:.9rem; letter-spacing:4px; margin:8px 0 6px; }
+    .score-lbl { font-family:var(--font-mono); font-size:.62rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:.09em; }
+    .score-from { font-size:.75rem; color:var(--text-dim); margin-top:3px; }
+
+    /* ── RATING BARS ── */
+    .rating-breakdown { background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-lg); padding:32px; }
+    .rating-breakdown h3 { font-family:var(--font-display); font-size:1.1rem; font-weight:700; color:var(--text-white); margin-bottom:22px; }
+    .rb-row { display:flex; align-items:center; gap:14px; margin-bottom:12px; }
+    .rb-cat { font-family:var(--font-mono); font-size:.68rem; color:var(--text-muted); width:160px; flex-shrink:0; text-align:right; }
+    .rb-bar { flex:1; height:8px; background:var(--bg-raised); border-radius:4px; overflow:hidden; }
+    .rb-fill { height:100%; border-radius:4px; transition:width 1.2s var(--ease); width:0; }
+    .rb-val { font-family:var(--font-mono); font-size:.72rem; color:var(--text-soft); width:30px; text-align:right; flex-shrink:0; }
+
+    /* ── REVIEW CARDS ── */
+    .reviews-layout { display:grid; grid-template-columns:1fr 1fr 1fr; gap:22px; }
+
+    .rev-card {
+      background:var(--bg-card); border:1px solid var(--border); border-radius:var(--r-xl);
+      padding:28px 24px; display:flex; flex-direction:column; gap:18px;
+      transition:border-color .3s, transform .25s;
+    }
+    .rev-card:hover { transform:translateY(-5px); }
+
+    /* Top accents per card by nth */
+    .rev-card:nth-child(1){border-top:2px solid var(--indigo)}
+    .rev-card:nth-child(2){border-top:2px solid var(--coral)}
+    .rev-card:nth-child(3){border-top:2px solid var(--lime)}
+    .rev-card:nth-child(4){border-top:2px solid var(--cyan)}
+    .rev-card:nth-child(5){border-top:2px solid var(--violet)}
+    .rev-card:nth-child(6){border-top:2px solid var(--gold)}
+    .rev-card:nth-child(7){border-top:2px solid var(--coral)}
+    .rev-card:nth-child(8){border-top:2px solid var(--indigo)}
+    .rev-card:nth-child(9){border-top:2px solid var(--lime)}
+
+    .rev-card:nth-child(1):hover{border-color:rgba(79,70,255,.4)}
+    .rev-card:nth-child(2):hover{border-color:rgba(255,79,106,.4)}
+    .rev-card:nth-child(3):hover{border-color:rgba(184,255,53,.4)}
+    .rev-card:nth-child(4):hover{border-color:rgba(0,229,255,.4)}
+    .rev-card:nth-child(5):hover{border-color:rgba(191,95,255,.4)}
+    .rev-card:nth-child(6):hover{border-color:rgba(255,184,48,.4)}
+    .rev-card:nth-child(7):hover{border-color:rgba(255,79,106,.4)}
+    .rev-card:nth-child(8):hover{border-color:rgba(79,70,255,.4)}
+    .rev-card:nth-child(9):hover{border-color:rgba(184,255,53,.4)}
+
+    .rev-header { display:flex; justify-content:space-between; align-items:flex-start; }
+    .rev-company-logo {
+      width:42px; height:42px; border-radius:var(--r-md); flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-display); font-size:1.1rem; font-weight:900;
+    }
+    .rev-card:nth-child(1) .rev-company-logo{background:linear-gradient(135deg,var(--indigo),var(--indigo-2));color:#fff}
+    .rev-card:nth-child(2) .rev-company-logo{background:linear-gradient(135deg,var(--coral),#c83850);color:#fff}
+    .rev-card:nth-child(3) .rev-company-logo{background:linear-gradient(135deg,#1a3a1a,#2a5a2a);color:var(--lime)}
+    .rev-card:nth-child(4) .rev-company-logo{background:linear-gradient(135deg,#0a2a3a,#0a3a4a);color:var(--cyan)}
+    .rev-card:nth-child(5) .rev-company-logo{background:linear-gradient(135deg,#2a0a4a,#3a1a5a);color:var(--violet-2)}
+    .rev-card:nth-child(6) .rev-company-logo{background:linear-gradient(135deg,#3a2a00,#4a3a00);color:var(--gold)}
+    .rev-card:nth-child(7) .rev-company-logo{background:linear-gradient(135deg,#3a0a1a,#4a0a2a);color:var(--coral-2)}
+    .rev-card:nth-child(8) .rev-company-logo{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff}
+    .rev-card:nth-child(9) .rev-company-logo{background:linear-gradient(135deg,#0a3a2a,#0a4a3a);color:var(--lime-2)}
+
+    .rev-stars { font-size:.78rem; letter-spacing:3px; }
+    .rev-card:nth-child(odd) .rev-stars{color:var(--gold)}
+    .rev-card:nth-child(even) .rev-stars{color:var(--gold)}
+
+    .rev-company-name { font-family:var(--font-display); font-size:.95rem; font-weight:700; color:var(--text-white); }
+    .rev-company-meta { font-family:var(--font-mono); font-size:.62rem; color:var(--text-dim); margin-top:2px; }
+
+    .rev-plan-pill {
+      font-family:var(--font-mono); font-size:.6rem; padding:4px 10px; border-radius:var(--r-2xl);
+      border:1px solid var(--border-2); color:var(--text-dim); background:var(--bg-raised); white-space:nowrap;
+    }
+
+    .rev-body { font-size:.87rem; color:var(--text-soft); line-height:1.72; flex:1; }
+
+    .rev-highlights { display:flex; flex-direction:column; gap:7px; }
+    .rev-highlight {
+      display:flex; align-items:flex-start; gap:8px;
+      font-size:.8rem; color:var(--text-muted); line-height:1.5;
+    }
+    .rev-highlight::before { content:'✓'; flex-shrink:0; font-weight:700; margin-top:1px; }
+    .rev-card:nth-child(1) .rev-highlight::before{color:var(--indigo-3)}
+    .rev-card:nth-child(2) .rev-highlight::before{color:var(--coral)}
+    .rev-card:nth-child(3) .rev-highlight::before{color:var(--lime)}
+    .rev-card:nth-child(4) .rev-highlight::before{color:var(--cyan)}
+    .rev-card:nth-child(5) .rev-highlight::before{color:var(--violet-2)}
+    .rev-card:nth-child(6) .rev-highlight::before{color:var(--gold)}
+    .rev-card:nth-child(7) .rev-highlight::before{color:var(--coral-2)}
+    .rev-card:nth-child(8) .rev-highlight::before{color:var(--indigo-3)}
+    .rev-card:nth-child(9) .rev-highlight::before{color:var(--lime)}
+
+    .rev-reviewer { display:flex; align-items:center; gap:11px; padding-top:14px; border-top:1px solid var(--border); }
+    .rev-avatar {
+      width:36px; height:36px; border-radius:50%; flex-shrink:0;
+      display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-display); font-size:.85rem; font-weight:900;
+    }
+    .rev-card:nth-child(1) .rev-avatar{background:linear-gradient(135deg,var(--indigo),var(--violet));color:#fff}
+    .rev-card:nth-child(2) .rev-avatar{background:linear-gradient(135deg,var(--coral),var(--gold));color:#fff}
+    .rev-card:nth-child(3) .rev-avatar{background:linear-gradient(135deg,var(--lime),var(--cyan));color:var(--bg-0)}
+    .rev-card:nth-child(4) .rev-avatar{background:linear-gradient(135deg,var(--cyan),var(--indigo));color:#fff}
+    .rev-card:nth-child(5) .rev-avatar{background:linear-gradient(135deg,var(--violet),var(--coral));color:#fff}
+    .rev-card:nth-child(6) .rev-avatar{background:linear-gradient(135deg,var(--gold),var(--coral));color:var(--bg-0)}
+    .rev-card:nth-child(7) .rev-avatar{background:linear-gradient(135deg,var(--coral),var(--violet));color:#fff}
+    .rev-card:nth-child(8) .rev-avatar{background:linear-gradient(135deg,var(--indigo),var(--lime));color:#fff}
+    .rev-card:nth-child(9) .rev-avatar{background:linear-gradient(135deg,var(--lime),var(--violet));color:var(--bg-0)}
+
+    .rev-name { font-size:.85rem; font-weight:600; color:var(--text-white); font-family:var(--font-body); }
+    .rev-role { font-family:var(--font-mono); font-size:.6rem; color:var(--text-dim); }
+
+    /* ── FEATURED QUOTE ── */
+    .featured-quote-box {
+      background:linear-gradient(135deg,rgba(79,70,255,.12),rgba(191,95,255,.08));
+      border:1px solid rgba(79,70,255,.3); border-radius:var(--r-xl);
+      padding:48px 52px; text-align:center; margin-bottom:60px; position:relative; overflow:hidden;
+    }
+    .featured-quote-box::before{content:'❝';position:absolute;top:-10px;left:32px;font-size:8rem;color:rgba(79,70,255,.1);line-height:1;font-family:var(--font-display)}
+    .fq-text { font-family:var(--font-display); font-size:clamp(1.2rem,2.5vw,1.7rem); font-style:italic; color:var(--text-white); line-height:1.5; margin-bottom:24px; position:relative; }
+    .fq-author { font-family:var(--font-mono); font-size:.72rem; color:var(--indigo-3); letter-spacing:.08em; }
+    .fq-stars { color:var(--gold); font-size:.9rem; letter-spacing:5px; margin-bottom:16px; }
+
+    /* ── VERIFIED BADGE STRIP ── */
+    .verified-strip {
+      display:flex; gap:20px; flex-wrap:wrap; align-items:center; justify-content:center;
+      padding:32px; background:var(--bg-card); border:1px solid var(--border);
+      border-radius:var(--r-lg); margin-top:48px;
+    }
+    .v-badge { display:flex; align-items:center; gap:8px; font-family:var(--font-mono); font-size:.68rem; color:var(--text-muted); }
+    .v-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+
+    @media(max-width:960px){ .reviews-layout{grid-template-columns:1fr 1fr} .score-strip{grid-template-columns:1fr 1fr} }
+    @media(max-width:620px){ .reviews-layout{grid-template-columns:1fr} .score-strip{grid-template-columns:1fr 1fr} .rb-cat{width:100px;font-size:.6rem} }
+  </style>
+</head>
+<body>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo"><div class="logo-gem"></div>Iron<span class="accent">wood</span></a>
+  <ul class="nav-links">
+    <li><a href="index.html#about">Platform</a></li>
+    <li><a href="index.html#coverage">Coverage</a></li>
+    <li><a href="case-studies.html">Case Studies</a></li>
+    <li><a href="analytics.html">Analytics</a></li>
+    <li><a href="reviews.html" class="active">Reviews</a></li>
+    <li><a href="index.html#pricing">Pricing</a></li>
+  </ul>
+  <button class="nav-cta" onclick="location.href='index.html#pricing'">Get Protected</button>
+  <button class="hamburger" onclick="toggleNav()"><span></span><span></span><span></span></button>
+</nav>
+
+<div class="page-hero">
+  <div class="mesh"></div>
+  <div class="page-hero-inner">
+    <div class="page-chip cor">// Verified Client Reviews</div>
+    <h1 class="page-title">What India's enterprises<br>say about <span class="grad">Ironwood</span></h1>
+    <p class="page-sub">840+ enterprises across banking, manufacturing, healthcare, government, and tech share their experience with Ironwood's agentic AI cybersecurity platform.</p>
+  </div>
+</div>
+
+<div class="ticker-band"><div class="ticker-track" id="ticker"></div></div>
+
+<!-- SCORES -->
+<section class="content-section" style="background:var(--bg-1);">
+  <div class="section-chip lime reveal">// Aggregate Scores</div>
+  <h2 class="sec-title reveal rd1">Overall <em><span class="grad-lime">4.9 / 5.0</span></em> across 840+ clients</h2>
+  <p class="sec-sub reveal rd2">Scores independently verified and aggregated from post-deployment surveys, NPS programmes, and third-party review platforms.</p>
+
+  <div class="score-strip">
+    <div class="score-card reveal rd1">
+      <div class="score-big"><span class="sc1">4.9</span></div>
+      <div class="score-stars" style="color:var(--gold)">★★★★★</div>
+      <div class="score-lbl">Overall Score</div>
+      <div class="score-from">840 verified reviews</div>
+    </div>
+    <div class="score-card reveal rd2">
+      <div class="score-big"><span class="sc2">98%</span></div>
+      <div class="score-stars" style="color:var(--cyan)">▲▲▲▲▲</div>
+      <div class="score-lbl">Would Recommend</div>
+      <div class="score-from">NPS Score: +82</div>
+    </div>
+    <div class="score-card reveal rd3">
+      <div class="score-big"><span class="sc3">4.8</span></div>
+      <div class="score-stars" style="color:var(--gold)">★★★★★</div>
+      <div class="score-lbl">Ease of Deployment</div>
+      <div class="score-from">Avg. 4.2 hrs to go live</div>
+    </div>
+    <div class="score-card reveal rd4">
+      <div class="score-big"><span class="sc4">4.9</span></div>
+      <div class="score-stars" style="color:var(--gold)">★★★★★</div>
+      <div class="score-lbl">SOC Support Quality</div>
+      <div class="score-from">24×7 response SLA met 99.6%</div>
+    </div>
+  </div>
+
+  <div class="rating-breakdown reveal rd2">
+    <h3>Category Ratings</h3>
+    <div class="rb-row"><span class="rb-cat">Threat Detection Speed</span><div class="rb-bar"><div class="rb-fill" data-w="98%" style="background:linear-gradient(90deg,var(--indigo),var(--indigo-3))"></div></div><span class="rb-val">4.9</span></div>
+    <div class="rb-row"><span class="rb-cat">False Positive Rate</span><div class="rb-bar"><div class="rb-fill" data-w="96%" style="background:linear-gradient(90deg,var(--coral),var(--coral-2))"></div></div><span class="rb-val">4.8</span></div>
+    <div class="rb-row"><span class="rb-cat">Autonomous Response</span><div class="rb-bar"><div class="rb-fill" data-w="99%" style="background:linear-gradient(90deg,var(--lime),var(--lime-2))"></div></div><span class="rb-val">5.0</span></div>
+    <div class="rb-row"><span class="rb-cat">Dashboard & Reporting</span><div class="rb-bar"><div class="rb-fill" data-w="94%" style="background:linear-gradient(90deg,var(--cyan),var(--cyan-2))"></div></div><span class="rb-val">4.7</span></div>
+    <div class="rb-row"><span class="rb-cat">Compliance Support</span><div class="rb-bar"><div class="rb-fill" data-w="97%" style="background:linear-gradient(90deg,var(--violet),var(--violet-2))"></div></div><span class="rb-val">4.9</span></div>
+    <div class="rb-row"><span class="rb-cat">Value for Money</span><div class="rb-bar"><div class="rb-fill" data-w="95%" style="background:linear-gradient(90deg,var(--gold),var(--gold-2))"></div></div><span class="rb-val">4.8</span></div>
+    <div class="rb-row"><span class="rb-cat">SOC Team Quality</span><div class="rb-bar"><div class="rb-fill" data-w="98%" style="background:linear-gradient(90deg,var(--indigo),var(--coral))"></div></div><span class="rb-val">4.9</span></div>
+  </div>
+</section>
+
+<!-- FEATURED QUOTE -->
+<section class="content-section" style="background:var(--bg-0);">
+  <div class="featured-quote-box reveal">
+    <div class="fq-stars">★★★★★</div>
+    <div class="fq-text">"We evaluated five cybersecurity vendors over six months. Ironwood was the only platform that could demonstrate autonomous response in under one second in our live proof-of-concept. The moment we saw it quarantine a simulated ransomware attack before our SOC analyst finished reading the alert — we signed the contract the same day."</div>
+    <div class="fq-author">— Group CISO · India's largest private sector bank (identity protected per NDA)</div>
+  </div>
+</section>
+
+<!-- 9 REVIEWS GRID -->
+<section class="content-section" style="background:var(--bg-1);">
+  <div class="section-chip cyan reveal">// Client Reviews</div>
+  <h2 class="sec-title reveal rd1">Voices from <em><span class="grad">840+ enterprises</span></em></h2>
+  <p class="sec-sub reveal rd2">Across every sector, every plan tier, and every scale — here's what Ironwood clients say in their own words.</p>
+
+  <div class="reviews-layout">
+
+    <div class="rev-card reveal rd1">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">SB</div>
+          <div><div class="rev-company-name">StellarBank</div><div class="rev-company-meta">Banking · Mumbai · Citadel Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Citadel</div></div>
+      </div>
+      <div class="rev-body">"Ironwood caught a nation-state APT attack that was completely invisible to our previous SIEM. The autonomous response isolated 47 endpoints before any human analyst was even aware there was an incident. We calculate Ironwood saved us approximately ₹340 crore in a single night. The ROI calculation is honestly embarrassing — in the best possible way."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">CERT-In mandatory reporting automated within 15 minutes</div>
+        <div class="rev-highlight">Zero customer-facing disruption during the entire incident</div>
+        <div class="rev-highlight">Forensic report accepted by RBI cybersecurity audit, zero findings</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">RK</div><div><div class="rev-name">Rajesh K.</div><div class="rev-role">CISO · Banking Sector</div></div></div>
+    </div>
+
+    <div class="rev-card reveal rd2">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">BP</div>
+          <div><div class="rev-company-name">Bharat Precision</div><div class="rev-company-meta">Manufacturing · Pune · Citadel Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Citadel</div></div>
+      </div>
+      <div class="rev-body">"LockBit tried to cross from our IT into our OT network. Ironwood stopped it at the DMZ before a single PLC was touched. Our production lines didn't miss a beat. Our Diwali order run worth ₹28 crore per day was completely protected. The OT monitoring module understands Modbus and DNP3 in a way no other product we tested did."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">Zero production downtime across 14 CNC lines during active ransomware attack</div>
+        <div class="rev-highlight">Cyber insurance premium reduced 42% post-deployment</div>
+        <div class="rev-highlight">IEC 62443 compliance achieved within 3 months of deployment</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">MV</div><div><div class="rev-name">Mahesh V.</div><div class="rev-role">VP Operations · Manufacturing</div></div></div>
+    </div>
+
+    <div class="rev-card reveal rd3">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">MB</div>
+          <div><div class="rev-company-name">MediBridge</div><div class="rev-company-meta">Healthcare · Bengaluru · Fortress Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Fortress</div></div>
+      </div>
+      <div class="rev-body">"An insider was stealing patient records in plain sight, disguising the exfiltration as routine backups. Ironwood's DLP caught it at 23:40 and stopped it before 0.3% of records were transferred. The full forensic package it generated was court-ready by morning. Our DPDP Act compliance audit the next week had zero findings."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">2.4M patient records protected from insider exfiltration</div>
+        <div class="rev-highlight">₹12 crore in DPDP Act penalties avoided</div>
+        <div class="rev-highlight">Court-admissible forensic evidence generated automatically</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">AS</div><div><div class="rev-name">Ananya S.</div><div class="rev-role">CTO · Healthcare Technology</div></div></div>
+    </div>
+
+    <div class="rev-card reveal rd1">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">KZ</div>
+          <div><div class="rev-company-name">KartZone Tech</div><div class="rev-company-meta">E-Commerce · Hyderabad · Fortress Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Fortress</div></div>
+      </div>
+      <div class="rev-body">"During our Diwali sale — 4.2 million concurrent users — we were hit with 280,000 credential stuffing attempts per minute. Ironwood blocked 99.98% of them and not a single legitimate customer was locked out. We didn't even know we were under attack until the post-incident report arrived. That's the peace of mind we pay for."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">Zero cart abandonment from security friction during peak sale</div>
+        <div class="rev-highlight">WAF rules updated autonomously every 90 seconds during attack</div>
+        <div class="rev-highlight">PCI DSS compliance maintained throughout with zero violations</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">PT</div><div><div class="rev-name">Priya T.</div><div class="rev-role">Head of Engineering · E-Commerce</div></div></div>
+    </div>
+
+    <div class="rev-card reveal rd2">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">LS</div>
+          <div><div class="rev-company-name">LearnSpark</div><div class="rev-company-meta">EdTech · Chennai · Sentinel Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Sentinel</div></div>
+      </div>
+      <div class="rev-body">"We're 45 people. We don't have a CISO. A BEC attack impersonated our CFO with an AI-generated voice note and nearly wire-transferred ₹62 lakhs offshore. Ironwood Sentinel stopped it in 4 minutes. ₹4,999 a month genuinely saved our company. There is no equivalent product at this price point for early-stage startups."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">AI-generated deepfake voice note detected and flagged automatically</div>
+        <div class="rev-highlight">Lookalike domain identified that human review missed</div>
+        <div class="rev-highlight">₹62 lakh wire transfer blocked before initiation</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">VR</div><div><div class="rev-name">Vikram R.</div><div class="rev-role">CEO · EdTech Startup</div></div></div>
+    </div>
+
+    <div class="rev-card reveal rd3">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">TF</div>
+          <div><div class="rev-company-name">TrustFin Capital</div><div class="rev-company-meta">NBFC · Delhi · Fortress Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Fortress</div></div>
+      </div>
+      <div class="rev-body">"As an NBFC we're under constant scrutiny from RBI on cybersecurity posture. Ironwood's compliance dashboard generates our quarterly RBI cyber risk reports automatically. What used to be a 3-week manual effort by our compliance team is now a button click. The SEBI/RBI compliance pack in Citadel is worth the upgrade cost alone."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">RBI cyber risk reporting automated — saves 60 analyst-hours/quarter</div>
+        <div class="rev-highlight">Zero regulatory findings in last 3 RBI inspection rounds</div>
+        <div class="rev-highlight">ISO 27001 certification achieved 40% faster than benchmark</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">NK</div><div><div class="rev-name">Nandini K.</div><div class="rev-role">Chief Compliance Officer · NBFC</div></div></div>
+    </div>
+
+    <div class="rev-card reveal rd1">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">NX</div>
+          <div><div class="rev-company-name">Nexus Pharma</div><div class="rev-company-meta">Pharma · Ahmedabad · Citadel Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Citadel</div></div>
+      </div>
+      <div class="rev-body">"Industrial espionage is a constant threat for pharma R&D. Ironwood caught a sophisticated data theft attempt targeting our formula databases — the attacker had valid credentials from a compromised contractor. The behavioural analytics flagged the unusual access pattern 3 hours in, long before the exfiltration was complete. Intellectual property worth hundreds of crores was protected."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">R&D formula database access anomaly detected via UEBA in 3 hours</div>
+        <div class="rev-highlight">Contractor credential misuse identified despite valid authentication</div>
+        <div class="rev-highlight">Zero IP theft in 18 months post-deployment</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">SC</div><div><div class="rev-name">Suresh C.</div><div class="rev-role">VP IT Security · Pharma</div></div></div>
+    </div>
+
+    <div class="rev-card reveal rd2">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">GS</div>
+          <div><div class="rev-company-name">GovServ Solutions</div><div class="rev-company-meta">GovTech · Jaipur · Enterprise Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Enterprise</div></div>
+      </div>
+      <div class="rev-body">"We run critical citizen-facing government digital services. A DDoS and simultaneous application-layer attack during a major portal launch would have been a national embarrassment. Ironwood's air-gapped Enterprise deployment handled both the volume attack and the SQL injection attempts simultaneously, with the portal maintaining 99.99% uptime during the launch day surge."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">99.99% portal uptime maintained during coordinated DDoS + SQLi attack</div>
+        <div class="rev-highlight">On-premise Enterprise deployment with data residency compliance</div>
+        <div class="rev-highlight">MeitY cybersecurity audit passed with commendation</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">DR</div><div><div class="rev-name">Dr. Ramesh A.</div><div class="rev-role">Director IT · Government Services</div></div></div>
+    </div>
+
+    <div class="rev-card reveal rd3">
+      <div class="rev-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <div class="rev-company-logo">BL</div>
+          <div><div class="rev-company-name">BrightLogic SaaS</div><div class="rev-company-meta">B2B SaaS · Bengaluru · Sentinel Plan</div></div>
+        </div>
+        <div style="text-align:right;"><div class="rev-stars">★★★★★</div><div class="rev-plan-pill">Sentinel</div></div>
+      </div>
+      <div class="rev-body">"Our enterprise customers asked for SOC 2 Type II as a requirement to close contracts. With Ironwood Sentinel, we got our SOC 2 report in 4 months — our auditor said the Ironwood evidence pack was the cleanest they'd seen from a startup. We closed ₹8 crore in deals in the 6 weeks after getting the certification. Ironwood paid for itself in the first enterprise contract."</div>
+      <div class="rev-highlights">
+        <div class="rev-highlight">SOC 2 Type II achieved in 4 months — 60% faster than industry average</div>
+        <div class="rev-highlight">₹8 crore in enterprise deals unlocked by compliance certification</div>
+        <div class="rev-highlight">Continuous compliance monitoring — zero evidence-gathering effort for audits</div>
+      </div>
+      <div class="rev-reviewer"><div class="rev-avatar">KM</div><div><div class="rev-name">Kavitha M.</div><div class="rev-role">Co-Founder & CTO · B2B SaaS</div></div></div>
+    </div>
+
+  </div><!-- /.reviews-layout -->
+
+  <div class="verified-strip reveal">
+    <div class="v-badge"><div class="v-dot" style="background:var(--lime)"></div>All reviews verified by post-deployment survey</div>
+    <div class="v-badge"><div class="v-dot" style="background:var(--indigo-3)"></div>Identities confirmed, shared with permission</div>
+    <div class="v-badge"><div class="v-dot" style="background:var(--coral)"></div>NPS Score: +82 (Industry avg: +31)</div>
+    <div class="v-badge"><div class="v-dot" style="background:var(--cyan)"></div>98% renewal rate across all plan tiers</div>
+    <div class="v-badge"><div class="v-dot" style="background:var(--gold)"></div>Average deployment: October 2023 – present</div>
+  </div>
+</section>
+
+<footer>
+  <div class="foot-top">
+    <div class="foot-brand">
+      <a href="index.html" class="nav-logo" style="font-size:1.1rem;"><div class="logo-gem" style="width:26px;height:26px;"></div>Iron<span class="accent">wood</span></a>
+      <p>Agentic AI Cybersecurity built for India.</p>
+      <div class="cert-row"><span class="cert">CERT-In Empanelled</span><span class="cert">ISO 27001</span><span class="cert">SOC 2 Type II</span><span class="cert">DPDP Ready</span></div>
+    </div>
+    <div class="foot-col"><h4>Pages</h4><ul><li><a href="index.html">Home</a></li><li><a href="case-studies.html">Case Studies</a></li><li><a href="analytics.html">Analytics</a></li><li><a href="reviews.html">Reviews</a></li></ul></div>
+    <div class="foot-col"><h4>Platform</h4><ul><li><a href="index.html#coverage">External Defence</a></li><li><a href="index.html#coverage">Internal Defence</a></li><li><a href="index.html#pricing">Pricing</a></li></ul></div>
+    <div class="foot-col"><h4>Legal</h4><ul><li><a href="#">Privacy Policy</a></li><li><a href="#">Terms of Service</a></li><li><a href="#">CERT-In Reports</a></li></ul></div>
+  </div>
+  <div class="foot-bottom">
+    <p>© 2025 Ironwood Technologies Pvt. Ltd. · Bengaluru, Karnataka, India</p>
+    <div style="display:flex;gap:8px;"><span class="cert">MeitY Recognised</span><span class="cert">Startup India</span></div>
+  </div>
+</footer>
+
+<button id="chat-fab" onclick="toggleChat()" title="Ask Ironwood AI">🛡️<div class="fab-badge">AI</div></button>
+<div id="chat-win">
+  <div class="chat-hdr"><div class="chat-av">🛡️</div><div class="chat-info"><strong>Ironwood Shield AI</strong><span>● Online</span></div><button class="chat-x" onclick="toggleChat()">✕</button></div>
+  <div class="chat-msgs" id="chat-messages"></div>
+  <div class="qbtns" id="quick-btns">
+    <button class="qb" onclick="sendQuick('How does Ironwood compare to other SIEM vendors?')">vs. other SIEMs</button>
+    <button class="qb" onclick="sendQuick('What makes Ironwood good for compliance?')">Compliance?</button>
+  </div>
+  <div class="chat-inp-row"><textarea id="chat-input" rows="1" placeholder="Ask about Ironwood…" onkeydown="handleEnter(event)" oninput="autoResize(this)"></textarea><button id="chat-send" onclick="sendMessage()">➤</button></div>
+</div>
+
+<script src="ironwood.js"></script>
+<script>
+  // Rating bars animation
+  const rbIO = new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.querySelectorAll('.rb-fill').forEach(b=>{ b.style.width = b.dataset.w; });
+        rbIO.unobserve(e.target);
+      }
+    });
+  },{threshold:.3});
+  document.querySelectorAll('.rating-breakdown').forEach(g=>rbIO.observe(g));
+</script>
+</body>
+</html>
